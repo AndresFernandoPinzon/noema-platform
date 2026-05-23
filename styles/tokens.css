@@ -1,0 +1,23 @@
+:root {
+  /* Marca */
+  --color-bg: #07090f;
+  --color-surface: #0d111c;
+  --color-surface-2: #111826;
+  --color-border: rgba(255,255,255,0.08);
+
+  /* Colores */
+  --color-primary: #c9a227;
+  --color-primary-hover: #d9b236;
+  --color-text: #f0f4fb;
+  --color-muted: #b0bfd4;
+  --color-soft: #5a7090;
+
+  /* Fuentes */
+  --font-heading: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-logo: 'Bebas Neue', sans-serif;
+
+  /* Espaciado */
+  --space-page: 56px;
+  --radius-card: 16px;
+}

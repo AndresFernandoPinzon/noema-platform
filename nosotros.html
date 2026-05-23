@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nosotros — NOEMA Framework BI</title>
+<meta name="description" content="No trabajamos con datos. Trabajamos con el significado de los datos.">
+<link rel="canonical" href="https://noema.lat/nosotros">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090f;--s1:#0d111c;--s2:#111826;--bd:rgba(255,255,255,0.08);--bdh:rgba(255,255,255,0.16);--gold:#c9a227;--gd:rgba(201,162,39,0.10);--tx:#f0f4fb;--t2:#b0bfd4;--t3:#5a7090;--t4:#2e3f55}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden;line-height:1.65;background-image:radial-gradient(ellipse 70% 45% at 50% -8%,rgba(201,162,39,.06) 0%,transparent 68%),radial-gradient(circle,rgba(201,162,39,.025) 1px,transparent 1px);background-size:100% 100%,36px 36px}
+::selection{background:var(--gold);color:#06080d}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:0 56px;height:64px;border-bottom:1px solid var(--bd);background:rgba(7,9,15,.92);backdrop-filter:blur(16px)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:5px;color:var(--tx);text-decoration:none}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-size:12px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);text-decoration:none;transition:color .18s}
+.nav-links a:hover{color:var(--tx)}
+.nav-links a.active{color:var(--gold)}
+.nav-cta{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-decoration:none;padding:9px 20px;border:1px solid rgba(201,162,39,.35);transition:all .18s}
+.nav-cta:hover{background:var(--gd);border-color:var(--gold)}
+.btn-gold{display:inline-block;padding:14px 32px;background:var(--gold);color:#06080d;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .18s;font-family:'DM Sans',sans-serif}
+.btn-gold:hover{background:#d9b236}
+.btn-ghost{display:inline-block;padding:14px 32px;background:transparent;color:var(--tx);border:1px solid var(--bdh);font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:all .18s;font-family:'DM Sans',sans-serif}
+.btn-ghost:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+.hero{min-height:100vh;padding-top:64px;display:flex;flex-direction:column;justify-content:center;padding-left:56px;padding-right:56px;position:relative;overflow:hidden}
+.hero-bg-glyph{position:absolute;right:-40px;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:clamp(280px,30vw,480px);font-weight:600;font-style:italic;color:rgba(201,162,39,.04);line-height:1;pointer-events:none;user-select:none;letter-spacing:-8px}
+.hero-inner{max-width:720px;position:relative;z-index:1}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+.eyebrow-line{width:28px;height:1px;background:var(--gold);flex-shrink:0}
+.eyebrow-text{font-size:10px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,6vw,80px);font-weight:300;line-height:1.04;letter-spacing:-.5px;color:var(--tx);margin-bottom:36px}
+.hero-h1 em{font-style:italic;color:var(--gold)}
+.hero-lead{font-size:19px;font-weight:300;color:var(--t2);line-height:1.8;max-width:580px;margin-bottom:40px}
+.hero-tagline{display:inline-block;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;color:var(--t2);padding:12px 0;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);letter-spacing:.3px}
+.sect-label{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--t2);margin-bottom:44px}
+.pheno{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;padding:100px 56px;max-width:1200px;margin:0 auto}
+.pheno-pre{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--t2);margin-bottom:36px}
+.pheno-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,48px);font-weight:300;line-height:1.15;color:var(--tx);margin-bottom:24px}
+.pheno-quote em{font-style:italic;color:var(--gold)}
+.pheno-attr{font-size:12px;font-weight:400;letter-spacing:1px;color:var(--t3);margin-bottom:48px;display:flex;align-items:center;gap:10px}
+.pheno-attr::before{content:'';width:20px;height:1px;background:var(--t3)}
+.pheno-body{font-size:16px;font-weight:300;color:var(--t2);line-height:1.9}
+.pheno-right{padding:48px 44px;background:var(--s1);border:1px solid var(--bd);border-left:2px solid var(--gold);position:sticky;top:80px}
+.concept-title{font-size:9px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.concept-word{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;font-style:italic;color:var(--gold);line-height:1;margin-bottom:4px;letter-spacing:-1px}
+.concept-origin{font-size:11px;font-weight:400;color:var(--t3);letter-spacing:.5px;margin-bottom:28px}
+.concept-def{font-size:15px;font-weight:300;color:var(--t2);line-height:1.75;border-top:1px solid var(--bd);padding-top:24px;margin-bottom:24px}
+.concept-bridge{font-size:14px;font-weight:400;color:var(--tx);line-height:1.7;padding:18px 20px;background:rgba(201,162,39,.06);border-left:2px solid rgba(201,162,39,.5)}
+.turn{background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:100px 56px}
+.turn-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start}
+.turn-label{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--t2);padding-top:6px}
+.turn-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.8vw,48px);font-weight:300;line-height:1.12;color:var(--tx);margin-bottom:32px}
+.turn-h2 em{font-style:italic;color:var(--gold)}
+.contrast-list{display:flex;flex-direction:column;gap:12px;margin-bottom:36px}
+.contrast-row{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;padding:16px 20px;background:rgba(255,255,255,.025);border:1px solid var(--bd)}
+.contrast-a{font-size:14px;font-weight:300;color:var(--t2);line-height:1.4}
+.contrast-sep{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--t4);text-align:center}
+.contrast-b{font-size:14px;font-weight:400;color:var(--tx);line-height:1.4;padding-left:16px;border-left:1px solid var(--bd)}
+.contrast-b em{font-style:italic;color:var(--gold)}
+.turn-body{font-size:17px;font-weight:300;color:var(--t2);line-height:1.85}
+.epoje{padding:100px 56px;max-width:1200px;margin:0 auto}
+.epoje-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.epoje-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.8vw,52px);font-weight:300;line-height:1.1;color:var(--tx);margin-bottom:28px}
+.epoje-h2 em{font-style:italic;color:var(--gold)}
+.epoje-body{font-size:16px;font-weight:300;color:var(--t2);line-height:1.85;margin-bottom:36px}
+.epoje-steps{display:flex;flex-direction:column;gap:0}
+.epoje-step{display:flex;gap:20px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--bd)}
+.epoje-step:last-child{border-bottom:none}
+.step-num{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:1px;flex-shrink:0;width:24px;padding-top:2px}
+.step-text{font-size:15px;font-weight:300;color:var(--t2);line-height:1.6}
+.step-text strong{color:var(--tx);font-weight:500;display:block;margin-bottom:3px}
+.epoje-right{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:56px 48px;background:var(--s1);border:1px solid var(--bd)}
+.epoje-word{font-family:'Cormorant Garamond',serif;font-size:clamp(72px,10vw,120px);font-weight:300;font-style:italic;color:rgba(201,162,39,.25);line-height:.9;margin-bottom:28px;letter-spacing:-3px}
+.epoje-def{font-size:14px;font-weight:300;color:var(--t2);line-height:1.75;padding-top:24px;border-top:1px solid var(--bd)}
+.epoje-def strong{color:var(--tx);font-weight:500}
+.method{background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:100px 56px}
+.method-inner{max-width:1100px;margin:0 auto}
+.method-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:64px;align-items:end}
+.method-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,46px);font-weight:300;line-height:1.12;color:var(--tx)}
+.method-h2 em{font-style:italic;color:var(--gold)}
+.method-sub{font-size:16px;font-weight:300;color:var(--t2);line-height:1.8}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd)}
+.method-card{background:var(--s1);padding:40px 36px;border-top:2px solid var(--gold);transition:background .18s}
+.method-card:hover{background:var(--s2)}
+.method-num{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:2px;margin-bottom:20px}
+.method-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--tx);margin-bottom:12px;line-height:1.2}
+.method-body{font-size:14px;font-weight:300;color:var(--t2);line-height:1.7}
+.diff{padding:100px 56px;max-width:900px;margin:0 auto;text-align:center}
+.diff-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,52px);font-weight:300;line-height:1.12;color:var(--tx);margin-bottom:28px}
+.diff-h2 em{font-style:italic;color:var(--gold)}
+.diff-body{font-size:18px;font-weight:300;color:var(--t2);line-height:1.85;margin-bottom:48px;max-width:660px;margin-left:auto;margin-right:auto}
+.diff-contrast{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;border:1px solid var(--bd);margin-bottom:64px}
+.diff-col{padding:40px 36px}
+.diff-col.bad{background:rgba(239,68,68,.04);border-right:1px solid var(--bd)}
+.diff-col.good{background:rgba(201,162,39,.04)}
+.diff-col-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:20px}
+.diff-col.bad .diff-col-label{color:#ef4444}
+.diff-col.good .diff-col-label{color:var(--gold)}
+.diff-col-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;line-height:1.2;margin-bottom:16px;color:var(--tx)}
+.diff-col-body{font-size:14px;font-weight:300;color:var(--t2);line-height:1.7}
+.diff-sep{display:flex;align-items:center;justify-content:center;width:48px;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--t4)}
+.filter{padding:80px 56px;background:var(--s1);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.filter-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.filter-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3.5vw,42px);font-weight:300;line-height:1.15;color:var(--tx)}
+.filter-h2 em{font-style:italic;color:var(--gold)}
+.filter-right{display:flex;flex-direction:column;gap:0}
+.filter-row{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--bd)}
+.filter-row:last-child{border-bottom:none}
+.filter-mark{font-family:'DM Sans',sans-serif;font-size:18px;font-weight:300;color:var(--t4);flex-shrink:0;width:18px;padding-top:1px}
+.filter-mark.yes{color:var(--gold)}
+.filter-text{font-size:15px;font-weight:300;color:var(--t2);line-height:1.6}
+.filter-text strong{color:var(--tx);font-weight:400}
+.closing{padding:120px 56px;max-width:860px;margin:0 auto;text-align:center}
+.closing-pre{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--t2);margin-bottom:40px}
+.closing-q{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4.5vw,58px);font-weight:300;line-height:1.15;color:var(--t2);margin-bottom:32px}
+.closing-q em{font-style:italic;color:var(--tx)}
+.closing-answer{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3.5vw,44px);font-weight:300;font-style:italic;color:var(--gold);margin-bottom:56px}
+.closing-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+footer{border-top:1px solid var(--bd);padding:52px 56px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
+.footer-left{display:flex;flex-direction:column;gap:18px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:5px;color:var(--t2);text-decoration:none}
+.footer-tagline{font-size:14px;font-weight:300;font-style:italic;font-family:'Cormorant Garamond',serif;color:var(--t2)}
+.footer-links{display:flex;gap:28px;flex-wrap:wrap}
+.footer-links a{font-size:13px;font-weight:400;color:var(--t2);text-decoration:none;transition:color .18s}
+.footer-links a:hover{color:var(--tx)}
+.footer-right{font-size:13px;font-weight:400;color:var(--t3)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.hero-inner>*{opacity:0;animation:fadeUp .75s ease forwards}
+.hero-inner>*:nth-child(1){animation-delay:.05s}
+.hero-inner>*:nth-child(2){animation-delay:.18s}
+.hero-inner>*:nth-child(3){animation-delay:.3s}
+.hero-inner>*:nth-child(4){animation-delay:.42s}
+.hero-bg-glyph{animation:fadeIn 1.2s ease .5s both}
+.reveal{opacity:1;transform:translateY(0);transition:opacity .7s ease,transform .7s ease}
+.js-ready .reveal{opacity:0;transform:translateY(24px)}
+.js-ready .reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:1100px){
+  nav{padding:0 32px}
+  .hero{padding:100px 32px 64px}
+  .pheno{grid-template-columns:1fr;gap:48px;padding:80px 32px}
+  .pheno-right{position:static}
+  .turn{padding:80px 32px}
+  .turn-inner{grid-template-columns:1fr;gap:32px}
+  .epoje{padding:80px 32px}
+  .epoje-grid{grid-template-columns:1fr;gap:40px}
+  .method{padding:80px 32px}
+  .method-header{grid-template-columns:1fr;gap:28px}
+  .method-grid{grid-template-columns:1fr 1fr}
+  .diff{padding:80px 32px}
+  .diff-contrast{grid-template-columns:1fr}
+  .diff-col.bad{border-right:none;border-bottom:1px solid var(--bd)}
+  .diff-sep{display:none}
+  .filter{padding:80px 32px}
+  .filter-inner{grid-template-columns:1fr;gap:36px}
+  .closing{padding:80px 32px}
+  footer{padding:40px 32px}
+}
+@media(max-width:640px){
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  .hero{padding:100px 20px 64px}
+  .hero-bg-glyph{display:none}
+  .pheno,.turn,.epoje,.method,.diff,.filter,.closing{padding:64px 20px}
+  .method-grid{grid-template-columns:1fr}
+  .contrast-row{grid-template-columns:1fr;gap:8px}
+  .contrast-sep{display:none}
+  .contrast-b{padding-left:0;border-left:none}
+  .closing-actions{flex-direction:column;align-items:center}
+  footer{padding:40px 20px;flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">NOEMA</a>
+  <ul class="nav-links">
+    <li><a href="/">Inicio</a></li>
+    <li><a href="/nosotros" class="active">Nosotros</a></li>
+  </ul>
+  <a href="/diagnostico" class="nav-cta">Diagnóstico ICO →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg-glyph">N</div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-line"></div>
+      <div class="eyebrow-text">NOEMA · Quiénes somos</div>
+    </div>
+    <h1 class="hero-h1">Antes de los datos,<br>está la forma en que<br><em>los ves.</em></h1>
+    <p class="hero-lead">Alguna vez te has detenido a observar un número en un reporte… y darte cuenta de que no es el número lo importante, sino cómo lo estás interpretando. No ves una cifra. Ves una alerta, una oportunidad, o un problema. Ahí comienza todo.</p>
+    <span class="hero-tagline">"No trabajamos con datos. Trabajamos con el significado de los datos."</span>
+  </div>
+</section>
+
+<div class="pheno reveal">
+  <div class="pheno-left">
+    <div class="pheno-pre">NOEMA · Origen del nombre</div>
+    <h2 class="pheno-quote">La realidad no es solo<br>lo que está ahí afuera.<br>Es cómo la <em>conciencia</em><br>le da sentido.</h2>
+    <div class="pheno-attr">Edmund Husserl · Investigaciones Lógicas, 1901</div>
+    <p class="pheno-body">Hace más de un siglo, el filósofo Edmund Husserl propuso algo radical: todo lo que percibimos, lo percibimos <em>como algo</em>. No hay observación neutral. No hay dato puro. Siempre hay una intención, un marco, una interpretación detrás.</p>
+    <p class="pheno-body" style="margin-top:20px">A esto lo llamó <strong style="color:var(--tx);font-weight:400">intencionalidad</strong>. Y al contenido de esa percepción — al sentido que le damos a lo que vemos — lo llamó <strong style="color:var(--gold);font-weight:400">noema</strong>.</p>
+    <p class="pheno-body" style="margin-top:20px">No el objeto. El significado del objeto. No el dato. El significado del dato.</p>
+  </div>
+  <div class="pheno-right">
+    <div class="concept-title">Concepto fundacional</div>
+    <div class="concept-word">noema</div>
+    <div class="concept-origin">Del griego νόημα · Fenomenología · Husserl (1901)</div>
+    <p class="concept-def">En fenomenología, el <em>noema</em> es el contenido intencional de un acto de consciencia. Es el objeto tal como aparece para el sujeto que lo percibe — no la cosa en sí, sino el sentido que la conciencia le atribuye.</p>
+    <div class="concept-bridge">En una empresa, el noema de un número es lo que ese número <em>significa</em> para quien lo lee. El problema ocurre cuando cada quien tiene un noema diferente para la misma cifra.</div>
+  </div>
+</div>
+
+<section class="turn">
+  <div class="turn-inner reveal">
+    <div class="turn-label">De la filosofía al negocio</div>
+    <div class="turn-right">
+      <h2 class="turn-h2">En las empresas<br>pasa <em>lo mismo.</em></h2>
+      <div class="contrast-list">
+        <div class="contrast-row">
+          <div class="contrast-a">Un número puede ser…</div>
+          <div class="contrast-sep">→</div>
+          <div class="contrast-b">crecimiento <em>o</em> error</div>
+        </div>
+        <div class="contrast-row">
+          <div class="contrast-a">Un dashboard puede ser…</div>
+          <div class="contrast-sep">→</div>
+          <div class="contrast-b">control <em>o</em> ilusión</div>
+        </div>
+        <div class="contrast-row">
+          <div class="contrast-a">Un reporte puede ser…</div>
+          <div class="contrast-sep">→</div>
+          <div class="contrast-b">verdad <em>o</em> interpretación</div>
+        </div>
+      </div>
+      <p class="turn-body">Sin un sistema claro de significados compartidos, cada área percibe algo distinto. Ventas ve una cifra. Finanzas ve otra. Operaciones llega con una tercera. La reunión no empieza con decisiones — empieza con una discusión sobre cuál número es real.</p>
+    </div>
+  </div>
+</section>
+
+<section class="epoje reveal">
+  <div class="epoje-grid">
+    <div class="epoje-left">
+      <div class="sect-label">Nuestro método · Primera etapa</div>
+      <h2 class="epoje-h2">Primero,<br>suspender<br><em>el ruido.</em></h2>
+      <p class="epoje-body">Husserl hablaba de algo más: la <strong style="color:var(--tx);font-weight:400">epojé</strong>. Suspender lo que crees saber para ver las cosas como son. Sin suposiciones heredadas. Sin "así siempre se ha hecho". Sin interpretaciones acumuladas durante años.</p>
+      <p class="epoje-body">Eso es exactamente lo que hacemos antes de construir cualquier cosa. Nos detenemos. Preguntamos. Cuestionamos cada definición.</p>
+      <div class="epoje-steps">
+        <div class="epoje-step"><div class="step-num">01</div><div class="step-text"><strong>Suspender suposiciones</strong>¿Qué significa "margen" en esta empresa? ¿Todos lo calculan igual?</div></div>
+        <div class="epoje-step"><div class="step-num">02</div><div class="step-text"><strong>Eliminar interpretaciones heredadas</strong>¿Por qué este reporte existe? ¿A quién le sirve realmente?</div></div>
+        <div class="epoje-step"><div class="step-num">03</div><div class="step-text"><strong>Mapear la realidad operativa</strong>¿Cómo se construye cada cifra? ¿Desde dónde? ¿Con qué criterio?</div></div>
+        <div class="epoje-step"><div class="step-num">04</div><div class="step-text"><strong>Construir sobre terreno firme</strong>Solo entonces diseñamos el sistema. No antes.</div></div>
+      </div>
+    </div>
+    <div class="epoje-right">
+      <div class="epoje-word">ἐποχή</div>
+      <p class="epoje-def"><strong>Epojé</strong> (del griego: abstención, suspensión del juicio). En fenomenología husserliana, es el acto de suspender temporalmente toda afirmación sobre la realidad para examinarla sin preconcepciones.<br><br>En NOEMA: es el primer paso de cada proyecto. Antes de cualquier dashboard, antes de cualquier herramienta, preguntamos qué es lo que realmente está ahí.</p>
+    </div>
+  </div>
+</section>
+
+<section class="method">
+  <div class="method-inner">
+    <div class="method-header reveal">
+      <div>
+        <div class="sect-label">Lo que hacemos · En la práctica</div>
+        <h2 class="method-h2">Transformamos esa filosofía<br>en un <em>sistema operativo</em><br>de datos.</h2>
+      </div>
+      <p class="method-sub">No es consultoría de software. No es implementación de herramientas. Es construir el significado compartido que hace que todos en la organización vean lo mismo — y puedan decidir sobre ello.</p>
+    </div>
+    <div class="method-grid reveal">
+      <div class="method-card"><div class="method-num">01 · Diagnóstico</div><div class="method-name">Medir antes de construir</div><p class="method-body">El ICO (Índice de Confiabilidad Operativa) mapea el nivel real de control que tiene la empresa sobre sus datos. No lo que cree tener — lo que realmente tiene.</p></div>
+      <div class="method-card"><div class="method-num">02 · Intervención</div><div class="method-name">Una sola fuente de verdad</div><p class="method-body">Unificamos definiciones, alineamos criterios entre áreas y construimos el sistema que garantiza que todos hablen del mismo número con el mismo significado.</p></div>
+      <div class="method-card"><div class="method-num">03 · Control</div><div class="method-name">Gobierno que escala</div><p class="method-body">Documentamos procesos, asignamos responsables y automatizamos lo que puede automatizarse. El sistema no depende de personas — existe por diseño.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="diff reveal">
+  <div class="sect-label" style="text-align:left">La diferencia</div>
+  <h2 class="diff-h2">No construimos dashboards.<br>Construimos <em>sentido.</em></h2>
+  <p class="diff-body">Un dashboard sin significado compartido no es control. Es ruido visual. Y el ruido visual más elegante del mundo no reemplaza a una organización que sabe qué mide y por qué.</p>
+  <div class="diff-contrast">
+    <div class="diff-col bad">
+      <div class="diff-col-label">Sin NOEMA</div>
+      <div class="diff-col-title">Datos sin significado</div>
+      <p class="diff-col-body">Múltiples versiones del mismo número. Reuniones que empiezan discutiendo cifras. Dashboards que nadie confía. Decisiones basadas en la interpretación de quien presenta.</p>
+    </div>
+    <div class="diff-sep">→</div>
+    <div class="diff-col good">
+      <div class="diff-col-label">Con NOEMA</div>
+      <div class="diff-col-title">Significado compartido</div>
+      <p class="diff-col-body">Una sola versión de cada número. Reuniones que empiezan en la decisión. Control operativo que no depende de personas. Dirección que confía en lo que ve.</p>
+    </div>
+  </div>
+</section>
+
+<section class="filter">
+  <div class="filter-inner reveal">
+    <h2 class="filter-h2">Esto no<br>es para <em>todos.</em></h2>
+    <div class="filter-right">
+      <div class="filter-row"><div class="filter-mark">✕</div><div class="filter-text"><strong>No somos para empresas que quieren reportes más bonitos.</strong> Si el problema es estético, hay diseñadores para eso.</div></div>
+      <div class="filter-row"><div class="filter-mark">✕</div><div class="filter-text"><strong>No somos para quien ya cree que tiene el control.</strong> Quien no percibe el problema, no puede aprovechar la solución.</div></div>
+      <div class="filter-row"><div class="filter-mark yes">✓</div><div class="filter-text"><strong>Somos para quienes saben que el problema no son los datos</strong> — sino la falta de claridad y el costo silencioso que eso tiene.</div></div>
+      <div class="filter-row"><div class="filter-mark yes">✓</div><div class="filter-text"><strong>Somos para directivos que quieren certeza, no más reportes.</strong> Para quienes entienden que la diferencia entre decidir bien y decidir mal está en la confiabilidad del número que sostiene la decisión.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="closing reveal">
+  <div class="closing-pre">NOEMA · Por qué existimos</div>
+  <p class="closing-q">Cuando todos ven algo distinto,<br>no hay <em>decisiones.</em></p>
+  <p class="closing-answer">Cuando todos ven lo mismo,<br>hay control.</p>
+  <div class="closing-actions">
+    <a href="/diagnostico" class="btn-gold">Diagnosticar mi operación →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    <a href="/" class="footer-logo">NOEMA</a>
+    <div class="footer-tagline">"Pensar con sentido en un mundo lleno de datos."</div>
+    <div class="footer-links">
+      <a href="/politica-datos">Política de Datos</a>
+      <a href="/politica-cookies">Cookies</a>
+      <a href="/agenda">Contacto</a>
+    </div>
+  </div>
+  <div class="footer-right">© 2026 NOEMA Framework BI</div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js-ready');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

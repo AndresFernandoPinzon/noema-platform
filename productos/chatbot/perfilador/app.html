@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Encuentra tu apartamento ideal</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1B4FD8;--brand-dark:#1340B0;--brand-light:#EEF3FF;--brand-mid:#4F7BF7;
+  --success:#0F7B55;--success-bg:#E6F7F1;--success-border:#6EE7B7;
+  --danger:#B91C1C;--danger-bg:#FEF2F2;--danger-border:#FECACA;
+  --warn-bg:#FFFBEB;--warn-border:#FDE68A;--warn-text:#92400E;
+  --text:#111827;--text-2:#6B7280;--text-3:#9CA3AF;
+  --border:#E5E7EB;--surface:#F9FAFB;--white:#FFFFFF;
+  --radius:14px;--radius-sm:10px;--radius-xs:7px;
+}
+html,body{min-height:100vh;background:linear-gradient(135deg,#EEF3FF 0%,#F0FDF9 100%);font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--text)}
+#app{max-width:580px;margin:0 auto;padding:24px 16px 48px}
+
+/* LOADING */
+#loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+.spinner{width:40px;height:40px;border:3px solid var(--brand-light);border-top-color:var(--brand);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading-screen p{font-size:14px;color:var(--text-2)}
+
+/* BROKER BAR */
+.broker-bar{background:var(--brand);border-radius:var(--radius) var(--radius) 0 0;padding:16px 20px;display:flex;align-items:center;gap:13px}
+.broker-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.broker-info{flex:1;min-width:0}
+.broker-name{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.broker-sub{font-size:11px;color:rgba(255,255,255,0.72);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.broker-logo{font-size:11px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:0.07em;background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+
+/* TRUST BAR */
+.trust-bar{
+  background:#F8FAFF;
+  border:1px solid #DBEAFE;
+  border-top:none;
+  padding:7px 20px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.trust-item{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-size:10px;
+  color:#1F2937;
+  font-weight:600;
+}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:26px 26px 24px;box-shadow:0 4px 24px rgba(27,79,216,0.08),0 1px 4px rgba(0,0,0,0.04)}
+
+/* PROGRESS */
+.prog-wrap{margin-bottom:22px}
+.prog-meta{display:flex;justify-content:space-between;margin-bottom:7px}
+.prog-meta span{font-size:11px;color:var(--text-2);font-weight:500}
+.prog-track{height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,var(--brand) 0%,var(--brand-mid) 100%);border-radius:3px;transition:width 0.45s cubic-bezier(.4,0,.2,1)}
+
+/* STEPS */
+.step{display:none}
+.step.active{display:block;animation:fadeUp 0.28s cubic-bezier(.4,0,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* HEADERS */
+.section-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--brand);background:var(--brand-light);padding:3px 11px;border-radius:20px;margin-bottom:13px}
+.q-text{font-size:18px;font-weight:700;color:var(--text);line-height:1.45;margin-bottom:7px}
+.q-sub{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:18px}
+
+/* OPTIONS */
+.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:6px}
+.opt{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--white);text-align:left;width:100%;transition:border-color 0.15s,background 0.15s,box-shadow 0.15s}
+.opt:hover{border-color:#93A5FB;background:#F5F7FF;box-shadow:0 2px 8px rgba(27,79,216,0.08)}
+.opt.sel{border-color:var(--brand);background:var(--brand-light);box-shadow:0 0 0 3px rgba(27,79,216,0.1)}
+.opt-radio{width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--white)}
+.opt.sel .opt-radio{border-color:var(--brand);background:var(--brand)}
+.opt.sel .opt-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff}
+.opt-label{flex:1;font-size:14px;color:var(--text);font-weight:500;line-height:1.4}
+.opt.sel .opt-label{color:var(--brand)}
+.opt-emoji{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.opt-sublabel{font-size:11px;color:var(--text-2);margin-top:2px;font-weight:400}
+
+/* FIELDS */
+.field-group{margin-bottom:14px}
+.field-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.field-req{color:var(--brand)}
+.f-input{width:100%;padding:11px 14px;font-size:14px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;border:1.5px solid var(--border);border-radius:var(--radius-xs);color:var(--text);background:var(--white);outline:none;transition:border 0.15s,box-shadow 0.15s}
+.f-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,216,0.1)}
+.f-input::placeholder{color:var(--text-3)}
+textarea.f-input{resize:none;min-height:72px;line-height:1.55}
+.f-hint{font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5}
+
+/* PRIVACY NOTE */
+.privacy-note{display:flex;align-items:flex-start;gap:8px;background:#F8FAFF;border:1px solid #DBEAFE;border-radius:var(--radius-xs);padding:10px 13px;margin-top:10px}
+.privacy-note span{font-size:12px;color:#3B82F6;line-height:1.55}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:14px;font-size:15px;font-weight:700;color:#fff;background:var(--brand);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:background 0.15s,transform 0.12s,box-shadow 0.15s;letter-spacing:0.01em;margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:hover{background:var(--brand-dark);transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,79,216,0.28)}
+.btn-primary:active{transform:none;box-shadow:none}
+.btn-primary:disabled{background:#9CA3AF;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-retry{width:100%;padding:12px;font-size:14px;font-weight:600;color:var(--brand);background:var(--brand-light);border:1.5px solid rgba(27,79,216,0.25);border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:all 0.15s}
+.btn-retry:hover{background:var(--brand);color:#fff}
+
+/* ALERTS */
+.alert-box{border-radius:var(--radius-sm);padding:15px 16px;margin-bottom:18px;display:flex;gap:13px;align-items:flex-start}
+.alert-box.danger{background:var(--danger-bg);border:1px solid var(--danger-border)}
+.alert-box.success-box{background:var(--success-bg);border:1px solid var(--success-border)}
+.alert-box.warn{background:var(--warn-bg);border:1px solid var(--warn-border)}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.alert-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.alert-box.danger .alert-title{color:var(--danger)}
+.alert-box.success-box .alert-title{color:var(--success)}
+.alert-box.warn .alert-title{color:var(--warn-text)}
+.alert-body{font-size:13px;line-height:1.6;color:var(--text-2)}
+
+/* ERROR SUBMIT */
+.submit-error{background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius-sm);padding:14px 16px;margin-top:12px;display:none}
+.submit-error-title{font-size:13px;font-weight:700;color:var(--danger);margin-bottom:5px}
+.submit-error-body{font-size:12px;color:var(--text-2);line-height:1.6}
+.submit-error-wa{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:600;color:#25D366;text-decoration:none;background:#F0FDF4;padding:8px 14px;border-radius:var(--radius-xs);border:1px solid #BBF7D0}
+
+/* INFO BOX */
+.info-box{background:var(--brand-light);border-radius:var(--radius-xs);padding:10px 13px;margin-bottom:16px;font-size:12px;color:var(--brand);font-weight:500;line-height:1.5}
+
+/* ERR MSG */
+.err-msg{font-size:12px;color:var(--danger);margin-top:8px;animation:shake 0.35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* THANK YOU */
+.thank-you-icon{text-align:center;font-size:52px;margin-bottom:16px}
+.thank-you-title{font-size:22px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px}
+.thank-you-sub{font-size:14px;color:var(--text-2);text-align:center;line-height:1.6;margin-bottom:24px}
+.thank-you-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.ty-step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--surface);border-radius:var(--radius-xs);border:1px solid var(--border)}
+.ty-step-num{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ty-step-text{font-size:13px;color:var(--text-2);line-height:1.5}
+.ty-step-text strong{color:var(--text)}
+.ty-privacy{display:flex;align-items:flex-start;gap:8px;background:#F8FAFF;border:1px solid #DBEAFE;border-radius:var(--radius-xs);padding:11px 13px;margin-top:4px}
+.ty-privacy span{font-size:11px;color:#3B82F6;line-height:1.6}
+
+/* INACTIVE / ERROR SCREENS */
+.screen-center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;text-align:center;padding:24px}
+.screen-icon{font-size:48px;margin-bottom:16px}
+.screen-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.screen-sub{font-size:13px;color:var(--text-2);line-height:1.6;max-width:340px}
+
+@media(max-width:480px){#app{padding:16px 10px 36px}.card{padding:20px 18px}.q-text{font-size:16px}.btn-primary{font-size:14px;padding:13px}}
+
+/* UX TECH UPGRADES */
+/* Step counter chip */
+.step-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:16px}
+.step-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);opacity:0.4}
+.step-chip-dot.active{opacity:1;box-shadow:0 0 0 3px rgba(27,79,216,0.15)}
+/* Opt check feedback */
+.opt-check{width:18px;height:18px;border-radius:50%;background:var(--brand);display:none;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
+.opt-check::after{content:'✓';font-size:10px;color:#fff;font-weight:700}
+.opt.sel .opt-check{display:flex}
+.opt.sel .opt-emoji{display:none}
+/* Kbd hint */
+.kbd-hint{font-size:10px;color:var(--text-3);text-align:center;margin-top:12px;opacity:0.7}
+/* Floating progress ring on loading */
+.spinner-wrap{position:relative;width:48px;height:48px}
+.spinner-wrap .spinner{width:48px;height:48px;border-width:3px}
+.spinner-wrap .spinner-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+/* Section pill dot */
+.section-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--brand);display:inline-block}
+/* Smooth card enter */
+.card{animation:cardIn 0.35s cubic-bezier(.4,0,.2,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- LOADING -->
+  <div id="loading-screen">
+    <div class="spinner-wrap">
+      <div class="spinner"></div>
+      <div class="spinner-icon">🏠</div>
+    </div>
+    <p>Preparando tu formulario personalizado...</p>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div id="form-wrapper" style="display:none">
+
+    <div class="broker-bar">
+      <div class="broker-avatar" id="av">JP</div>
+      <div class="broker-info">
+        <div class="broker-name" id="bk-name">Cargando...</div>
+        <div class="broker-sub" id="bk-sub"></div>
+      </div>
+      <div class="broker-logo" id="bk-logo">HABI</div>
+    </div>
+    <!-- TRUST BAR -->
+    <div class="trust-bar">
+      <div class="trust-item">🔒 Tus datos están protegidos</div>
+      <div class="trust-item">🚫 No hacemos spam</div>
+      <div class="trust-item">✅ Sin costo para ti</div>
+    </div>
+
+    <div class="card">
+      <div class="prog-wrap">
+        <div class="prog-meta"><span id="step-lbl">Paso 1 de 12</span><span id="pct-lbl">0%</span></div>
+        <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+      </div>
+
+      <!-- S1: Bienvenida -->
+      <div class="step active" id="s1">
+        <div class="section-pill">Bienvenida</div>
+        <p class="q-text">Hola, estoy aquí para ayudarte a encontrar tu apartamento ideal</p>
+        <p class="q-sub" id="intro-text">Cargando...</p>
+        <div style="display:flex;flex-direction:column;gap:9px;margin:18px 0 4px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>Te hacemos preguntas clave sobre lo que buscas</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>Validamos que tengas el perfil listo para comprar</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span><span id="asesor-texto">Nuestro asesor te contacta con opciones a tu medida</span></div>
+        </div>
+        <div class="privacy-note" style="margin-top:14px">
+          <span>🔒 <strong>Tu información es 100% confidencial.</strong> Solo la usa tu asesor para encontrarte las mejores opciones. No se comparte con terceros ni se usa para publicidad.</span>
+        </div>
+        <button class="btn-primary" onclick="goTo(2)">Comenzar ahora <span>→</span></button>
+      </div>
+
+      <!-- S2: Contacto -->
+      <div class="step" id="s2">
+        <div class="section-pill">Tus datos</div>
+        <p class="q-text">¿Cómo te llamas y cómo te contactamos?</p>
+        <p class="q-sub" id="asesor-sub">Tu asesor te contactará directamente con las mejores opciones. Tu información nunca se comparte con otras personas ni empresas.</p>
+        <div class="field-group">
+          <div class="field-label">Nombre completo <span class="field-req">*</span></div>
+          <input class="f-input" type="text" id="nombre" placeholder="Ej: Carlos Ramírez" autocomplete="name"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">Celular (WhatsApp) <span class="field-req">*</span></div>
+          <input class="f-input" type="tel" id="celular" placeholder="Ej: 3001234567" autocomplete="tel"/>
+        </div>
+        <div class="privacy-note">
+          <span>🚫 <strong>Sin spam.</strong> Tu número solo se usa para que tu asesor te contacte con opciones relevantes. No recibirás llamadas de terceros ni mensajes no solicitados.</span>
+        </div>
+        <button class="btn-primary" onclick="next2()">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S3: Para quién -->
+      <div class="step" id="s3">
+        <div class="section-pill">Intención de compra</div>
+        <p class="q-text">¿Para quién estás buscando el apartamento?</p>
+        <p class="q-sub">Esto nos ayuda a entender quién va a vivir allí y qué necesidades tiene el hogar.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'comprador','yo_familia')"><div class="opt-radio"></div><div><div class="opt-label">Para mí y mi familia</div><div class="opt-sublabel">Somos los que vamos a vivir allí</div></div><span class="opt-emoji">🏡</span></button>
+          <button class="opt" onclick="sel(this,'comprador','yo_solo')"><div class="opt-radio"></div><span class="opt-label">Para mí solo(a)</span><span class="opt-emoji">👤</span></button>
+          <button class="opt" onclick="sel(this,'comprador','otra_persona')"><div class="opt-radio"></div><div><div class="opt-label">Para otra persona</div><div class="opt-sublabel">Padres, familiar, tercero</div></div><span class="opt-emoji">👨‍👩‍👧</span></button>
+          <button class="opt" onclick="sel(this,'comprador','inversion')"><div class="opt-radio"></div><div><div class="opt-label">Para invertir</div><div class="opt-sublabel">No voy a vivir allí, es para arrendar</div></div><span class="opt-emoji">📈</span></button>
+        </div>
+        <div class="field-group" style="margin-top:14px">
+          <div class="field-label">¿Algo más que debamos saber sobre quién va a vivir allí?</div>
+          <textarea class="f-input" id="nota_comprador" placeholder="Ej: somos 4 personas, tenemos mascotas, hay un adulto mayor..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="nextReq(3,4,'comprador')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S4: Habitaciones -->
+      <div class="step" id="s4">
+        <div class="section-pill">Características</div>
+        <p class="q-text">¿Cuántas habitaciones necesitas sí o sí?</p>
+        <p class="q-sub">Dinos el mínimo indispensable — así no te mostramos opciones que no aplican.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'habitaciones','1')"><div class="opt-radio"></div><span class="opt-label">1 habitación</span></button>
+          <button class="opt" onclick="sel(this,'habitaciones','2')"><div class="opt-radio"></div><span class="opt-label">2 habitaciones</span></button>
+          <button class="opt" onclick="sel(this,'habitaciones','3')"><div class="opt-radio"></div><span class="opt-label">3 habitaciones</span></button>
+          <button class="opt" onclick="sel(this,'habitaciones','4+')"><div class="opt-radio"></div><span class="opt-label">4 o más habitaciones</span></button>
+          <button class="opt" onclick="sel(this,'habitaciones','flexible')"><div class="opt-radio"></div><span class="opt-label">Flexible — cualquiera me sirve</span></button>
+        </div>
+        <div class="field-group" style="margin-top:14px">
+          <div class="field-label">¿Algún detalle adicional sobre los espacios?</div>
+          <textarea class="f-input" id="nota_habitaciones" placeholder="Ej: necesito estudio, dos baños mínimo, balcón..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="nextReq(4,5,'habitaciones')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S5: Parqueadero -->
+      <div class="step" id="s5">
+        <div class="section-pill">Características</div>
+        <p class="q-text">¿Necesitas parqueadero?</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'parqueadero','carro')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo carro</span><span class="opt-emoji">🚗</span></button>
+          <button class="opt" onclick="sel(this,'parqueadero','moto')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo moto</span><span class="opt-emoji">🛵</span></button>
+          <button class="opt" onclick="sel(this,'parqueadero','carro_moto')"><div class="opt-radio"></div><span class="opt-label">Tengo carro y moto</span></button>
+          <button class="opt" onclick="sel(this,'parqueadero','no')"><div class="opt-radio"></div><span class="opt-label">No, no tengo vehículo</span></button>
+        </div>
+        <button class="btn-primary" onclick="nextReq(5,6,'parqueadero')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S6: Ascensor -->
+      <div class="step" id="s6">
+        <div class="section-pill">Características</div>
+        <p class="q-text">¿El apartamento debe tener ascensor?</p>
+        <p class="q-sub">Clave si va a vivir allí alguien mayor, con movilidad reducida, o si prefieren no subir muchos pisos.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'ascensor','cualquier')"><div class="opt-radio"></div><span class="opt-label">No hay restricción — cualquier piso está bien</span></button>
+          <button class="opt" onclick="sel(this,'ascensor','con_ascensor')"><div class="opt-radio"></div><span class="opt-label">Sí o sí debe tener ascensor</span></button>
+          <button class="opt" onclick="sel(this,'ascensor','piso_bajo')"><div class="opt-radio"></div><span class="opt-label">Sin ascensor está bien, máximo piso 3</span></button>
+          <button class="opt" onclick="sel(this,'ascensor','piso_bajo_ascensor')"><div class="opt-radio"></div><span class="opt-label">Piso bajo con ascensor disponible en el edificio</span></button>
+        </div>
+        <div class="field-group" style="margin-top:14px">
+          <div class="field-label">¿Hay algún motivo específico? (opcional)</div>
+          <textarea class="f-input" id="nota_ascensor" placeholder="Ej: mi mamá tiene 75 años y no puede subir escaleras..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="nextReq(6,7,'ascensor')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S7: Zona -->
+      <div class="step" id="s7">
+        <div class="section-pill">Zona</div>
+        <p class="q-text">¿En qué zona estás buscando?</p>
+        <p class="q-sub" id="zona-sub">Si no tienes zona fija, escribe "abierto" — tenemos inventario en toda la ciudad.</p>
+        <div class="field-group">
+          <div class="field-label">Barrio, sector o localidad</div>
+          <input class="f-input" type="text" id="zona" placeholder="Ej: Chapinero, Suba, Engativá, Kennedy..." id="zona-input"/>
+        </div>
+        <div class="field-group">
+          <div class="field-label">¿Por qué te llama la atención esa zona?</div>
+          <textarea class="f-input" id="zona_razon" placeholder="Ej: cerca del trabajo, colegio de los niños, familia..."></textarea>
+        </div>
+        <div class="field-group">
+          <div class="field-label">¿Estarías abierto(a) a evaluar otras zonas?</div>
+          <div class="opts" style="margin-bottom:0">
+            <button class="opt" onclick="sel(this,'zona_flex','si')"><div class="opt-radio"></div><span class="opt-label">Sí, si el precio y las condiciones lo justifican</span></button>
+            <button class="opt" onclick="sel(this,'zona_flex','no')"><div class="opt-radio"></div><span class="opt-label">No, esa zona es definitiva para mí</span></button>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="nextZona()">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S8: Decisores -->
+      <div class="step" id="s8">
+        <div class="section-pill">Decisión de compra</div>
+        <p class="q-text">¿Quién más participa en la decisión de compra?</p>
+        <p class="q-sub">Es importante que todos los decisores estén en la visita para poder avanzar rápido.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'decisores','solo')"><div class="opt-radio"></div><span class="opt-label">Solo yo decido</span></button>
+          <button class="opt" onclick="sel(this,'decisores','pareja')"><div class="opt-radio"></div><span class="opt-label">Mi pareja o esposo(a)</span></button>
+          <button class="opt" onclick="sel(this,'decisores','familia')"><div class="opt-radio"></div><span class="opt-label">Mi familia (padres, hijos adultos)</span></button>
+          <button class="opt" onclick="sel(this,'decisores','varios')"><div class="opt-radio"></div><span class="opt-label">Somos varios — todos necesitamos estar presentes</span></button>
+        </div>
+        <button class="btn-primary" onclick="nextReq(8,'8b','decisores')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S8b: Presupuesto -->
+      <div class="step" id="s8b">
+        <div class="section-pill">Presupuesto</div>
+        <p class="q-text">¿En qué rango está el presupuesto que tienes en mente?</p>
+        <p class="q-sub">No es un compromiso — nos ayuda a mostrarte opciones reales, no las que están fuera de tu alcance.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'presupuesto','hasta_200')"><div class="opt-radio"></div><div><div class="opt-label">Hasta $200 millones</div><div class="opt-sublabel">VIS — bancos prestan hasta el 80%</div></div></button>
+          <button class="opt" onclick="sel(this,'presupuesto','200_300')"><div class="opt-radio"></div><div><div class="opt-label">$200M – $300 millones</div><div class="opt-sublabel">VIS / No VIS según el inmueble</div></div></button>
+          <button class="opt" onclick="sel(this,'presupuesto','300_500')"><div class="opt-radio"></div><div><div class="opt-label">$300M – $500 millones</div><div class="opt-sublabel">No VIS — bancos prestan hasta el 70%</div></div></button>
+          <button class="opt" onclick="sel(this,'presupuesto','500_800')"><div class="opt-radio"></div><div><div class="opt-label">$500M – $800 millones</div><div class="opt-sublabel">No VIS premium</div></div></button>
+          <button class="opt" onclick="sel(this,'presupuesto','mas_800')"><div class="opt-radio"></div><div><div class="opt-label">Más de $800 millones</div><div class="opt-sublabel">Segmento alto / lujo</div></div></button>
+          <button class="opt" onclick="sel(this,'presupuesto','no_definido')"><div class="opt-radio"></div><span class="opt-label">Aún no lo tengo definido</span></button>
+        </div>
+        <button class="btn-primary" onclick="nextReq('8b',9,'presupuesto')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S9: Crédito -->
+      <div class="step" id="s9">
+        <div class="section-pill">Capacidad financiera</div>
+        <p class="q-text">¿Cómo planeas financiar la compra?</p>
+        <p class="q-sub">Esto nos ayuda a entender qué opciones aplican para ti y cómo podemos acompañarte mejor.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'credito','aprobado');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Con crédito hipotecario — ya está aprobado</div><div class="opt-sublabel">Tengo carta de aprobación de un banco</div></div></button>
+          <button class="opt" onclick="sel(this,'credito','proceso');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Con crédito hipotecario — estoy en proceso</div><div class="opt-sublabel">Ya radicué o estoy en estudio de crédito</div></div></button>
+          <button class="opt" onclick="sel(this,'credito','solo_recursos');showNotaCredito(false)"><div class="opt-radio"></div><div><div class="opt-label">De contado — solo con mis propios recursos</div><div class="opt-sublabel">Sin financiación bancaria, pago completo</div></div></button>
+          <button class="opt" onclick="sel(this,'credito','mixto');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Combinado — crédito + recursos propios</div><div class="opt-sublabel">Parte con banco, parte con mis ahorros</div></div></button>
+          <button class="opt" onclick="sel(this,'credito','no');showNotaCredito(false)"><div class="opt-radio"></div><div><div class="opt-label">Aún no he iniciado el proceso</div><div class="opt-sublabel">No sé por dónde empezar</div></div></button>
+        </div>
+        <div class="field-group" style="margin-top:14px" id="nota-credito-wrap">
+          <div class="field-label">¿Con qué banco y por qué monto?</div>
+          <input class="f-input" type="text" id="nota_credito" placeholder="Ej: Davivienda, aprobado por $280 millones..."/>
+        </div>
+        <button class="btn-primary" onclick="nextCredito()">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S9b: Sin crédito -->
+      <div class="step" id="s9b">
+        <div class="alert-box danger">
+          <div class="alert-icon">⚠️</div>
+          <div>
+            <div class="alert-title">Primero validemos tu capacidad financiera</div>
+            <div class="alert-body">Para no hacerte perder el tiempo viendo apartamentos que no puedas tomar hoy, necesitas un crédito aprobado o en proceso. Te conectamos con un analista de <strong>HabiCrédito</strong> — es gratis y te orienta en menos de 24 horas.</div>
+          </div>
+        </div>
+        <p class="q-text" style="font-size:15px;margin-bottom:12px">¿Cuándo podemos llamarte?</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'horario','manana')"><div class="opt-radio"></div><span class="opt-label">Mañana, 8am – 12pm</span></button>
+          <button class="opt" onclick="sel(this,'horario','tarde')"><div class="opt-radio"></div><span class="opt-label">Tarde, 12pm – 6pm</span></button>
+          <button class="opt" onclick="sel(this,'horario','cualquier')"><div class="opt-radio"></div><span class="opt-label">Cualquier momento</span></button>
+        </div>
+        <button class="btn-primary" id="btn-submit-9b" onclick="submitLead('derivar','btn-submit-9b')">Confirmar y enviar mi información <span>→</span></button>
+        <div class="submit-error" id="err-9b">
+          <div class="submit-error-title">No pudimos enviar tu información</div>
+          <div class="submit-error-body">Hubo un problema técnico. Por favor intenta de nuevo o escríbenos directamente por WhatsApp y te atendemos de inmediato.</div>
+          <a class="submit-error-wa" id="wa-fallback-9b" href="#" target="_blank">💬 Escríbenos por WhatsApp</a>
+          <button class="btn-retry" onclick="submitLead('derivar','btn-submit-9b')">Intentar de nuevo</button>
+        </div>
+      </div>
+
+      <!-- S9c: Recursos propios -->
+      <div class="step" id="s9c">
+        <div class="section-pill">Recursos propios</div>
+        <p class="q-text">Además del crédito, ¿cuentas con recursos propios para la compra?</p>
+        <p class="q-sub">Esto nos ayuda a entender si puedes cubrir la cuota inicial, gastos notariales o negociar mejor.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'recursos_propios','si_disponibles')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo recursos propios disponibles</span></button>
+          <button class="opt" onclick="sel(this,'recursos_propios','parcial')"><div class="opt-radio"></div><span class="opt-label">Tengo una parte, pero no todo</span></button>
+          <button class="opt" onclick="sel(this,'recursos_propios','dependen_de_algo')"><div class="opt-radio"></div><span class="opt-label">Dependen de vender algo, CDT, cesantías u otra fuente</span></button>
+          <button class="opt" onclick="sel(this,'recursos_propios','no')"><div class="opt-radio"></div><span class="opt-label">No, solo cuento con el crédito</span></button>
+        </div>
+        <button class="btn-primary" onclick="nextReq('9c',10,'recursos_propios')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S10: Cuota -->
+      <div class="step" id="s10">
+        <div class="section-pill">Capacidad financiera</div>
+        <p class="q-text">¿Tienes la cuota inicial disponible hoy?</p>
+        <p class="q-sub">Los bancos prestan hasta el 70–80%. Necesitas el 20–30% restante + gastos notariales.</p>
+        <div class="info-box" id="s10-infobox">VIS (hasta $236M): banco presta hasta el 80% · No VIS (desde $237M): banco presta hasta el 70%</div>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'cuota','disponible')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo el dinero disponible hoy</span></button>
+          <button class="opt" onclick="sel(this,'cuota','pronto')"><div class="opt-radio"></div><span class="opt-label">Lo tendré en 1–2 meses</span></button>
+          <button class="opt" onclick="sel(this,'cuota','activo')"><div class="opt-radio"></div><span class="opt-label">Depende de venta de un activo o CDT</span></button>
+          <button class="opt" onclick="sel(this,'cuota','ahorrando')"><div class="opt-radio"></div><span class="opt-label">Todavía estoy ahorrando</span></button>
+        </div>
+        <button class="btn-primary" onclick="nextCuota()">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S10b: Sin cuota -->
+      <div class="step" id="s10b">
+        <div class="alert-box warn">
+          <div class="alert-icon">ℹ️</div>
+          <div>
+            <div class="alert-title" style="color:var(--warn-text)">Aún no es el momento para visitas</div>
+            <div class="alert-body">Sin la cuota inicial disponible no podemos avanzar a visitas, pero podemos ayudarte a planificar. Un analista de HabiCrédito puede orientarte sobre cómo prepararte.</div>
+          </div>
+        </div>
+        <p class="q-text" style="font-size:15px;margin-bottom:12px">¿Cuándo podemos llamarte?</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'horario','manana')"><div class="opt-radio"></div><span class="opt-label">Mañana, 8am – 12pm</span></button>
+          <button class="opt" onclick="sel(this,'horario','tarde')"><div class="opt-radio"></div><span class="opt-label">Tarde, 12pm – 6pm</span></button>
+          <button class="opt" onclick="sel(this,'horario','cualquier')"><div class="opt-radio"></div><span class="opt-label">Cualquier momento</span></button>
+        </div>
+        <button class="btn-primary" id="btn-submit-10b" onclick="submitLead('derivar','btn-submit-10b')">Confirmar y enviar mi información <span>→</span></button>
+        <div class="submit-error" id="err-10b">
+          <div class="submit-error-title">No pudimos enviar tu información</div>
+          <div class="submit-error-body">Hubo un problema técnico. Por favor intenta de nuevo o escríbenos directamente por WhatsApp.</div>
+          <a class="submit-error-wa" id="wa-fallback-10b" href="#" target="_blank">💬 Escríbenos por WhatsApp</a>
+          <button class="btn-retry" onclick="submitLead('derivar','btn-submit-10b')">Intentar de nuevo</button>
+        </div>
+      </div>
+
+      <!-- S11: Cierre -->
+      <div class="step" id="s11">
+        <div class="section-pill">Última pregunta</div>
+        <p class="q-text">Si encontramos el apartamento que cumple todo lo que buscas, ¿estás listo(a) para iniciar el proceso?</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'listo','si')"><div class="opt-radio"></div><span class="opt-label">Sí — si cumple lo que busco, avanzo de inmediato</span></button>
+          <button class="opt" onclick="sel(this,'listo','quizas')"><div class="opt-radio"></div><span class="opt-label">Quizás — todavía estoy evaluando opciones</span></button>
+          <button class="opt" onclick="sel(this,'listo','no')"><div class="opt-radio"></div><span class="opt-label">No por ahora — solo estoy mirando</span></button>
+        </div>
+        <div class="field-group" style="margin-top:16px">
+          <div class="field-label">¿Cuántos apartamentos has visto hasta ahora?</div>
+          <div class="opts" style="margin-bottom:0">
+            <button class="opt" onclick="sel(this,'vistos','ninguno')"><div class="opt-radio"></div><span class="opt-label">Ninguno, soy nuevo(a) buscando</span></button>
+            <button class="opt" onclick="sel(this,'vistos','pocos')"><div class="opt-radio"></div><span class="opt-label">Entre 1 y 5 apartamentos</span></button>
+            <button class="opt" onclick="sel(this,'vistos','muchos')"><div class="opt-radio"></div><span class="opt-label">Más de 5</span></button>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:14px">
+          <div class="field-label">¿Qué no te gustó de los que ya viste? (si aplica)</div>
+          <textarea class="f-input" id="nota_anteriores" placeholder="Ej: muy pequeños, sin parqueadero, sector peligroso, precio muy alto..."></textarea>
+        </div>
+        <button class="btn-primary" id="btn-submit-11" onclick="submitLead('completo','btn-submit-11')">Enviar mi perfil <span>→</span></button>
+        <div class="submit-error" id="err-11">
+          <div class="submit-error-title">No pudimos enviar tu información</div>
+          <div class="submit-error-body">Hubo un problema técnico. Por favor intenta de nuevo o escríbenos directamente por WhatsApp y te atendemos de inmediato.</div>
+          <a class="submit-error-wa" id="wa-fallback-11" href="#" target="_blank">💬 Escríbenos por WhatsApp</a>
+          <button class="btn-retry" onclick="submitLead('completo','btn-submit-11')">Intentar de nuevo</button>
+        </div>
+      </div>
+
+      <!-- THANK YOU -->
+      <div class="step" id="s_final">
+        <div class="thank-you-icon">🏠</div>
+        <h2 class="thank-you-title">¡Listo, recibimos tu perfil!</h2>
+        <p class="thank-you-sub" id="ty-message">En un momento nuestro asesor te contactará para ayudarte con tu apartamento ideal.</p>
+        <div class="thank-you-steps">
+          <div class="ty-step"><div class="ty-step-num">1</div><div class="ty-step-text">Revisamos tu perfil con las opciones disponibles que más aplican para ti</div></div>
+          <div class="ty-step"><div class="ty-step-num">2</div><div class="ty-step-text" id="ty-step2"><strong>Nuestro asesor</strong> te contactará por WhatsApp al número que registraste</div></div>
+          <div class="ty-step"><div class="ty-step-num">3</div><div class="ty-step-text">Si el perfil está listo, agendamos visita a los apartamentos que mejor cuadran contigo</div></div>
+        </div>
+        <div class="ty-privacy">
+          <span>🔒 <strong>Tus datos quedan en manos de tu asesor.</strong> No se comparten con terceros, no se usan para publicidad y no recibirás contacto de personas distintas a tu asesor asignado.</span>
+        </div>
+      </div>
+
+    </div><!-- /card -->
+  </div><!-- /form-wrapper -->
+
+  <!-- BROKER INACTIVO -->
+  <div id="inactive-screen" style="display:none">
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,0.06)">
+      <div class="broker-bar" style="border-radius:var(--radius) var(--radius) 0 0">
+        <div class="broker-avatar" id="av-inactive">—</div>
+        <div class="broker-info"><div class="broker-name">Formulario no disponible</div></div>
+      </div>
+      <div class="screen-center">
+        <div class="screen-icon">🔒</div>
+        <div class="screen-title">Este formulario no está activo</div>
+        <div class="screen-sub">El asesor ha pausado temporalmente este enlace. Si tienes su contacto directo, puedes escribirle por WhatsApp.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR DE CARGA -->
+  <div id="error-screen" style="display:none">
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,0.06)">
+      <div class="broker-bar" style="border-radius:var(--radius) var(--radius) 0 0">
+        <div class="broker-avatar">!</div>
+        <div class="broker-info"><div class="broker-name">Error al cargar</div></div>
+      </div>
+      <div class="screen-center">
+        <div class="screen-icon">⚠️</div>
+        <div class="screen-title">No pudimos cargar el formulario</div>
+        <div class="screen-sub">Hubo un problema técnico. Por favor recarga la página o contacta a tu asesor directamente.</div>
+        <button class="btn-primary" style="margin-top:20px;max-width:200px" onclick="location.reload()">Reintentar</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+
+<script>
+// ── CONFIGURACIÓN — reemplaza con tus URLs reales de n8n ──
+const N8N_GET_CONFIG = 'https://n8n.noema.lat/webhook/broker-config';
+const N8N_POST_LEAD  = 'https://n8n.noema.lat/webhook/process-lead';
+
+const D = {};
+const TOTAL = 13;
+let brokerConfig = {};
+
+// ── INIT ──
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const broker_id = params.get('broker') || 'default';
+  D.broker_id = broker_id;
+
+  try {
+    const res = await fetch(`${N8N_GET_CONFIG}?broker_id=${broker_id}`, {
+      headers: {
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
+
+    if (res.status === 404) {
+      showScreen('error'); return;
+    }
+
+    const config = await res.json();
+
+    if (config.activo !== true && config.activo !== 'TRUE') {
+      showScreen('inactive'); return;
+    }
+
+    brokerConfig = config;
+    applyConfig(config);
+    showScreen('form');
+    goTo(1);
+
+  } catch(e) {
+    showScreen('error');
+  }
+}
+
+function showScreen(which) {
+  document.getElementById('loading-screen').style.display   = 'none';
+  document.getElementById('form-wrapper').style.display     = which === 'form'     ? 'block' : 'none';
+  document.getElementById('inactive-screen').style.display  = which === 'inactive' ? 'block' : 'none';
+  document.getElementById('error-screen').style.display     = which === 'error'    ? 'block' : 'none';
+}
+
+function applyConfig(c) {
+  const nombre = c.nombre || 'Tu Broker';
+  const asesor = c.asesor || 'nuestro asesor';
+  const initials = nombre.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+  document.getElementById('av').textContent = initials;
+  document.getElementById('bk-name').textContent = nombre;
+  document.getElementById('bk-sub').textContent = c.inmobiliaria || '';
+  document.getElementById('bk-logo').textContent = c.logo || 'HABI';
+  document.getElementById('intro-text').innerHTML = `Soy <strong>${nombre}</strong>, de ${c.inmobiliaria || ''}. ${c.mensaje_intro || ''}`;
+  document.getElementById('asesor-texto').textContent = `${asesor} te contactará con opciones a tu medida`;
+  document.getElementById('asesor-sub').textContent = `${asesor.charAt(0).toUpperCase()+asesor.slice(1)} te contactará directamente con las mejores opciones. Tu información nunca se comparte con otras personas ni empresas.`;
+  // Zona: ciudad dinámica
+  const ciudad = c.ciudad || 'la ciudad';
+  const zonaSub = document.getElementById('zona-sub');
+  if(zonaSub) zonaSub.textContent = `Si no tienes zona fija, escribe "abierto" — tenemos inventario en toda ${ciudad}.`;
+  // Fallback WhatsApp en errores de submit
+  const waNum = c.whatsapp_destino || '';
+  ['9b','10b','11'].forEach(id => {
+    const el = document.getElementById('wa-fallback-'+id);
+    if (el && waNum) el.href = `https://wa.me/${waNum}?text=Hola,%20quiero%20información%20sobre%20apartamentos`;
+  });
+}
+
+// ── NAVEGACIÓN ──
+function goTo(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+  const stepId = n === 'final' ? 's_final' : 's' + n;
+  document.getElementById(stepId).classList.add('active');
+  let num = parseInt(n) || 0;
+  if (n==='9b'||n==='10b') num = 10;
+  if (n==='final') num = TOTAL;
+  const pct = Math.min(Math.round((num/TOTAL)*100),100);
+  document.getElementById('prog').style.width = pct+'%';
+  document.getElementById('pct-lbl').textContent = pct+'%';
+  document.getElementById('step-lbl').textContent = 'Paso '+(num||'-')+' de '+TOTAL;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function sel(btn,key,val) {
+  btn.closest('.opts').querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  D[key]=val;
+}
+
+function showErr(msg) {
+  const active = document.querySelector('.step.active');
+  const ex = active.querySelector('.err-msg');
+  if(ex) ex.remove();
+  const err = document.createElement('p');
+  err.className='err-msg';
+  err.textContent = msg||'Por favor selecciona una opción para continuar.';
+  active.querySelector('.btn-primary').before(err);
+  setTimeout(()=>err&&err.parentNode&&err.remove(),3000);
+}
+
+function nextReq(from,to,key){
+  if(!D[key]){showErr();return;}
+  goTo(to);
+}
+
+function next2(){
+  const n=document.getElementById('nombre').value.trim();
+  const c=document.getElementById('celular').value.trim();
+  if(!n){showErr('Por favor ingresa tu nombre completo.');return;}
+  if(!c){showErr('Por favor ingresa tu número de celular.');return;}
+  D.nombre=n; D.celular=c; goTo(3);
+}
+
+function nextZona(){
+  D.zona=document.getElementById('zona').value.trim()||'No especificada';
+  D.zona_razon=document.getElementById('zona_razon').value.trim()||'';
+  if(!D.zona_flex){showErr('Por favor indica si estás abierto a otras zonas.');return;}
+  goTo(8);
+}
+
+function showNotaCredito(visible) {
+  const wrap = document.getElementById('nota-credito-wrap');
+  if(wrap) wrap.style.display = visible ? 'block' : 'none';
+}
+
+function nextCredito(){
+  if(!D.credito){showErr();return;}
+  D.nota_credito=document.getElementById('nota_credito').value.trim();
+  if(D.credito==='no') {
+    goTo('9b');
+  } else if(D.credito==='solo_recursos') {
+    D.recursos_propios='solo_contado';
+    updateS10ForCash(true);
+    goTo(10);
+  } else {
+    // aprobado, proceso, mixto → preguntar recursos propios
+    updateS10ForCash(false);
+    goTo('9c');
+  }
+}
+
+function updateS10ForCash(isCash) {
+  const box = document.getElementById('s10-infobox');
+  if(!box) return;
+  if(isCash) {
+    box.textContent = 'Comprando de contado necesitas tener el 100% del valor disponible + gastos notariales (aprox. 2-3% adicional).';
+  } else {
+    box.textContent = 'VIS (hasta $236M): banco presta hasta el 80% · No VIS (desde $237M): banco presta hasta el 70%';
+  }
+}
+
+function nextCuota(){
+  if(!D.cuota){showErr();return;}
+  if(D.cuota==='ahorrando') goTo('10b'); else goTo(11);
+}
+
+function getNota(id){
+  const el=document.getElementById(id);
+  return el?el.value.trim():'';
+}
+
+// ── SUBMIT → n8n WF1 ──
+async function submitLead(tipo, btnId) {
+  if(tipo==='derivar' && !D.horario){showErr();return;}
+  if(tipo==='completo'){
+    if(!D.listo){showErr('Por favor indica si estás listo para comprar.');return;}
+    if(!D.vistos){showErr('Por favor indica cuántos apartamentos has visto.');return;}
+  }
+
+  const btn = document.getElementById(btnId);
+  const errBox = document.getElementById('err-'+btnId.replace('btn-submit-',''));
+  if(btn){btn.disabled=true; btn.innerHTML='<span>⏳</span> Enviando...';}
+  if(errBox) errBox.style.display='none';
+
+  const payload = {
+    broker_id:D.broker_id, nombre:D.nombre, celular:D.celular,
+    comprador:D.comprador||'', habitaciones:D.habitaciones||'',
+    parqueadero:D.parqueadero||'', ascensor:D.ascensor||'',
+    zona:D.zona||'', zona_flex:D.zona_flex||'',
+    decisores:D.decisores||'', presupuesto:D.presupuesto||'',
+    credito:D.credito||'', recursos_propios:D.recursos_propios||'',
+    cuota:D.cuota||'', listo:D.listo||'', vistos:D.vistos||'',
+    horario:D.horario||'',
+    nota_comprador:getNota('nota_comprador'),
+    nota_habitaciones:getNota('nota_habitaciones'),
+    nota_ascensor:getNota('nota_ascensor'),
+    nota_credito:D.nota_credito||'',
+    nota_anteriores:getNota('nota_anteriores'),
+    tipo_lead:tipo,
+    utm_source:D.utm_source||'',
+    utm_medium:D.utm_medium||'',
+    utm_campaign:D.utm_campaign||'',
+    propiedad:D.propiedad||''
+  };
+
+  try {
+    const res = await fetch(N8N_POST_LEAD,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'ngrok-skip-browser-warning':'true'
+      },
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+
+    if (!data.ok) throw new Error(data.error || 'ERROR');
+
+    if (data.duplicate === true) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = 'Enviar mi perfil <span></span>';
+      }
+
+      const asesor = data.asesor || brokerConfig.asesor || 'nuestro asesor';
+
+      document.querySelector('.thank-you-title').textContent =
+        'Ya habíamos recibido tu perfil';
+
+      document.getElementById('ty-message').innerHTML =
+        data.message || `Ya tenemos tu perfil registrado. <strong>${asesor}</strong> te contactará por WhatsApp para continuar con el proceso.`;
+
+      document.getElementById('ty-step2').innerHTML =
+        `<strong>${asesor}</strong> ya tiene tu información y podrá contactarte por WhatsApp.`;
+
+      goTo('final');
+      return;
+    }
+
+    showThankYou(data.asesor || brokerConfig.asesor || 'nuestro asesor', tipo);
+    
+  } catch(e) {
+    // Error real: mostrar bloque de error, NO thank you
+    if(btn){btn.disabled=false; btn.innerHTML='Intentar de nuevo <span>→</span>';}
+    if(errBox) errBox.style.display='block';
+  }
+}
+
+function showThankYou(asesor, tipo) {
+  const aliado = brokerConfig.aliado_credito || 'HabiCrédit';
+  const msg = tipo==='derivar'
+    ? `Un asesor de <strong>${aliado}</strong> te contactará pronto para ayudarte a preparar tu perfil financiero.`
+    : `En un momento <strong>${asesor}</strong> te contactará para ayudarte a encontrar tu apartamento ideal.`;
+  document.getElementById('ty-message').innerHTML = msg;
+  document.getElementById('ty-step2').innerHTML = `<strong>${asesor}</strong> te contactará por WhatsApp al número que registraste`;
+  goTo('final');
+}
+
+
+// ── CAPTURA TRACKING ──
+(function captureUTMs(){
+  const p = new URLSearchParams(window.location.search);
+  D.utm_source   = p.get('utm_source')   || '';
+  D.utm_medium   = p.get('utm_medium')   || '';
+  D.utm_campaign = p.get('utm_campaign') || '';
+  D.propiedad    = p.get('propiedad')    || '';
+})();
+
+init();
+
+</script>
+</body>
+</html>

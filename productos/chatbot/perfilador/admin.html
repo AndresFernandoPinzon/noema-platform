@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Brokertools — Mi Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1B4FD8;--brand-dark:#1340B0;--brand-light:#EEF3FF;--brand-mid:#4F7BF7;
+  --success:#0F7B55;--success-bg:#E6F7F1;--success-border:#6EE7B7;
+  --danger:#B91C1C;--danger-bg:#FEF2F2;--danger-border:#FECACA;
+  --warn:#92400E;--warn-bg:#FFFBEB;--warn-border:#FDE68A;
+  --text:#111827;--text-2:#6B7280;--text-3:#9CA3AF;
+  --border:#E5E7EB;--surface:#F9FAFB;--white:#FFFFFF;
+  --radius:14px;--radius-sm:10px;--radius-xs:7px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 2px 8px rgba(0,0,0,0.04);
+}
+html,body{min-height:100vh;background:#F1F4FB;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--text)}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--brand);padding:0 24px;display:flex;align-items:stretch;justify-content:space-between;min-height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(27,79,216,0.2)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-logo{font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+.topbar-divider{width:1px;height:18px;background:rgba(255,255,255,0.25)}
+.topbar-title{font-size:13px;font-weight:500;color:rgba(255,255,255,0.75)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.12);padding:4px 10px;border-radius:20px}
+.broker-chip{font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.15);padding:4px 11px;border-radius:20px;border:1px solid rgba(255,255,255,0.2)}
+
+/* ── LAYOUT ── */
+#app{max-width:740px;margin:0 auto;padding:28px 16px 60px}
+
+/* ── STATUS BAR ── */
+#status-bar{border-radius:var(--radius-xs);padding:12px 16px;margin-bottom:20px;display:none;font-size:13px;font-weight:600;align-items:center;gap:10px}
+#status-bar.success{background:var(--success-bg);border:1px solid var(--success-border);color:var(--success);display:flex}
+#status-bar.error{background:var(--danger-bg);border:1px solid var(--danger-border);color:var(--danger);display:flex}
+
+/* ── TOKEN GATE ── */
+#token-gate{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:44px 36px;text-align:center;margin-top:36px;box-shadow:var(--shadow)}
+.token-icon{font-size:52px;margin-bottom:18px}
+.token-title{font-size:22px;font-weight:800;color:var(--text);margin-bottom:8px}
+.token-sub{font-size:14px;color:var(--text-2);margin-bottom:28px;line-height:1.65;max-width:380px;margin-left:auto;margin-right:auto}
+.token-row{display:flex;gap:10px;max-width:420px;margin:0 auto 10px}
+.token-row .f-input{flex:1}
+#token-error{font-size:12px;color:var(--danger);margin-top:10px;display:none;font-weight:600}
+.token-privacy{font-size:11px;color:var(--text-3);margin-top:16px;line-height:1.65;max-width:360px;margin-left:auto;margin-right:auto}
+
+/* ── HERO BIENVENIDA (dentro del panel) ── */
+.panel-hero{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-mid) 100%);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 16px rgba(27,79,216,0.25)}
+.panel-hero-text .hello{font-size:13px;color:rgba(255,255,255,0.75);font-weight:500;margin-bottom:3px}
+.panel-hero-text .name{font-size:20px;font-weight:800;color:#fff}
+.panel-hero-text .sub{font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px}
+.panel-hero-status{display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.on{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,0.3)}
+.status-dot.off{background:#FCA5A5}
+.status-label{font-size:13px;font-weight:700;color:#fff}
+.toggle-status-btn{font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:5px 12px;cursor:pointer;transition:all 0.15s}
+.toggle-status-btn:hover{background:rgba(255,255,255,0.25)}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;gap:4px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px;margin-bottom:20px;box-shadow:var(--shadow)}
+.nav-tab{flex:1;padding:9px 12px;font-size:13px;font-weight:600;color:var(--text-2);background:transparent;border:none;border-radius:var(--radius-xs);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.nav-tab:hover{color:var(--brand);background:var(--brand-light)}
+.nav-tab.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(27,79,216,0.25)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── SECTION CARD ── */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.section-icon{width:38px;height:38px;border-radius:var(--radius-xs);background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.section-title{font-size:15px;font-weight:700;color:var(--text)}
+.section-sub{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
+
+/* ── FORMS ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field-group{display:flex;flex-direction:column;gap:5px}
+.field-group.full{grid-column:1/-1}
+.field-label{font-size:12px;font-weight:600;color:var(--text)}
+.field-hint{font-size:11px;color:var(--text-3);line-height:1.55;margin-top:3px}
+.f-input{width:100%;padding:10px 13px;font-size:14px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;border:1.5px solid var(--border);border-radius:var(--radius-xs);color:var(--text);background:var(--white);outline:none;transition:border 0.15s,box-shadow 0.15s}
+.f-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,216,0.1)}
+.f-input::placeholder{color:var(--text-3)}
+textarea.f-input{resize:vertical;min-height:80px;line-height:1.55}
+
+/* ── BUTTONS ── */
+.btn-primary{padding:12px 22px;font-size:14px;font-weight:700;color:#fff;background:var(--brand);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:background 0.15s,transform 0.12s,box-shadow 0.15s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{background:var(--brand-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(27,79,216,0.25)}
+.btn-primary:active{transform:none;box-shadow:none}
+.btn-primary:disabled{background:#9CA3AF;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-secondary{padding:10px 18px;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-light);border:1px solid rgba(27,79,216,0.2);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:7px}
+.btn-secondary:hover{background:var(--brand);color:#fff}
+.btn-ghost{padding:9px 16px;font-size:12px;font-weight:600;color:var(--text-2);background:transparent;border:1.5px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-light)}
+.actions-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px}
+
+/* ── LINK BOX ── */
+.link-box{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-xs);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.link-box.highlight{border-color:rgba(27,79,216,0.3);background:var(--brand-light)}
+.link-url{font-size:12px;color:var(--brand);font-weight:600;flex:1;word-break:break-all;font-family:monospace;line-height:1.5}
+.link-url.placeholder{color:var(--text-3);font-weight:400;font-family:inherit;font-style:italic}
+.btn-copy{padding:7px 13px;font-size:12px;font-weight:700;color:var(--brand);background:var(--white);border:1.5px solid rgba(27,79,216,0.25);border-radius:var(--radius-xs);cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
+.btn-copy:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ── CÓMO USAR (instrucciones contextuales) ── */
+.how-to{background:#FAFBFF;border:1px solid #DBEAFE;border-radius:var(--radius-xs);padding:14px 16px;margin-top:12px}
+.how-to-title{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.how-to-steps{display:flex;flex-direction:column;gap:8px}
+.how-to-step{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text-2);line-height:1.55}
+.how-to-num{width:20px;height:20px;border-radius:50%;background:var(--brand);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* ── TRACKING HISTORY ── */
+.link-history{margin-top:14px;display:none}
+.link-history-title{font-size:11px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.history-item{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-xs);margin-bottom:6px}
+.history-item-url{flex:1;font-size:11px;color:var(--brand);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.history-item-meta{font-size:10px;color:var(--text-3);white-space:nowrap;flex-shrink:0}
+.history-copy-btn{font-size:11px;font-weight:600;color:var(--brand);background:var(--brand-light);border:1px solid rgba(27,79,216,0.15);border-radius:5px;padding:3px 9px;cursor:pointer;flex-shrink:0}
+
+/* ── PRIVACY BOXES ── */
+.privacy-box{display:flex;align-items:flex-start;gap:10px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--radius-xs);padding:13px 15px;margin-top:8px}
+.privacy-box span{font-size:12px;color:#166534;line-height:1.6}
+
+/* ── LAST UPDATED ── */
+.last-updated{font-size:11px;color:var(--text-3);margin-top:8px;text-align:right}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:18px 0}
+
+/* ── BADGE INLINE ── */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.03em}
+.badge.new{background:#FEF3C7;color:#92400E}
+.badge.tip{background:var(--brand-light);color:var(--brand)}
+
+@media(max-width:560px){
+  .form-grid{grid-template-columns:1fr}
+  .actions-row{flex-direction:column;align-items:stretch}
+  .btn-primary,.btn-secondary{justify-content:center}
+  .nav-tab span.tab-label{display:none}
+  .panel-hero{flex-direction:column;align-items:flex-start}
+  #app{padding:20px 12px 48px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">Brokertools</div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title">Mi Panel</div>
+  </div>
+  <div class="topbar-right">
+    <div class="broker-chip" id="broker-chip" style="display:none"></div>
+    <div class="topbar-badge">MVP v1.0</div>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ══ TOKEN GATE ══ -->
+  <div id="token-gate">
+    <div class="token-icon">🏠</div>
+    <div class="token-title">Bienvenido a tu panel</div>
+    <div class="token-sub">Aquí configuras tu formulario de perfilamiento, creas links para tus publicaciones y ves tus leads. Ingresa tu ID y token para comenzar.</div>
+    <div class="token-row">
+      <input class="f-input" type="text" id="input-broker-id" placeholder="Tu ID (ej: jessica)" autocomplete="username"/>
+    </div>
+    <div class="token-row">
+      <input class="f-input" type="password" id="input-token" placeholder="Token de acceso" autocomplete="current-password"/>
+      <button class="btn-primary" onclick="loadConfig()">Entrar →</button>
+    </div>
+    <div id="token-error" style="font-size:12px;color:var(--danger);margin-top:10px;display:none;font-weight:600"></div>
+    <div class="token-privacy">🔒 Tu token se valida directamente contra tu configuración en Google Sheets. Nadie más puede acceder a tu panel.</div>
+  </div>
+
+  <!-- ══ PANEL ══ -->
+  <div id="admin-panel" style="display:none">
+
+    <div id="status-bar"></div>
+
+    <!-- HERO -->
+    <div class="panel-hero">
+      <div class="panel-hero-text">
+        <div class="hello">Hola,</div>
+        <div class="name" id="hero-nombre">—</div>
+        <div class="sub" id="hero-inmob">—</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+        <div class="panel-hero-status">
+          <div class="status-dot on" id="status-dot"></div>
+          <div class="status-label" id="status-label">Formulario activo</div>
+        </div>
+        <button class="toggle-status-btn" onclick="toggleFormStatus()" id="toggle-btn">Pausar formulario</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('tab-links',this)">🔗 <span class="tab-label">Mis links</span></button>
+      <button class="nav-tab" onclick="showTab('tab-config',this)">⚙️ <span class="tab-label">Configuración</span></button>
+      <button class="nav-tab" onclick="showTab('tab-datos',this)">🛡️ <span class="tab-label">Mis datos</span></button>
+    </div>
+
+    <!-- ══ TAB: LINKS ══ -->
+    <div class="tab-pane active" id="tab-links">
+
+      <!-- Link principal -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">📋</div>
+          <div>
+            <div class="section-title">Tu link de perfilamiento</div>
+            <div class="section-sub">Comparte este link cuando alguien te pregunte por un apartamento — el formulario captura su perfil automáticamente</div>
+          </div>
+        </div>
+
+        <div class="link-box highlight">
+          <span class="link-url" id="link-preview">—</span>
+          <button class="btn-copy" onclick="copyMainLink()" id="btn-copy-main">Copiar</button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn-secondary" onclick="previewForm()">👁 Ver formulario</button>
+          <button class="btn-ghost" onclick="openDashboard()">📊 Ver mis leads</button>
+        </div>
+
+        <div class="how-to">
+          <div class="how-to-title">💡 ¿Cuándo usar este link?</div>
+          <div class="how-to-steps">
+            <div class="how-to-step"><div class="how-to-num">1</div>Cuando alguien te escribe por WhatsApp preguntando por un apto — envíale este link antes de llamar</div>
+            <div class="how-to-step"><div class="how-to-num">2</div>En tu bio de Instagram o TikTok como link principal</div>
+            <div class="how-to-step"><div class="how-to-num">3</div>En respuestas automáticas de WhatsApp Business</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generador de links rastreables -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">📡</div>
+          <div>
+            <div class="section-title">Links para publicaciones <span class="badge new">TRACKING</span></div>
+            <div class="section-sub">Crea un link diferente para cada publicación — así sabes exactamente de dónde viene cada lead</div>
+          </div>
+        </div>
+
+        <div class="how-to" style="margin-bottom:16px">
+          <div class="how-to-title">💡 ¿Cuándo usar estos links?</div>
+          <div class="how-to-steps">
+            <div class="how-to-step"><div class="how-to-num">1</div>Cuando publicas un apto específico en redes — crea un link con el nombre del inmueble</div>
+            <div class="how-to-step"><div class="how-to-num">2</div>Cada publicación o story tiene su propio link — en tu dashboard verás de cuál vino cada lead</div>
+            <div class="how-to-step"><div class="how-to-num">3</div>Sirve para medir qué contenido te trae más leads de calidad</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <div class="field-label">¿Desde dónde lo vas a publicar?</div>
+            <select class="f-input" id="utm-origen" onchange="buildTrackingLink()">
+              <option value="">Selecciona la red...</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="email">Email</option>
+              <option value="portal_inmobiliario">Portal inmobiliario</option>
+              <option value="referido">Referido</option>
+              <option value="google">Google Ads</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">¿Qué inmueble o publicación es?</div>
+            <input class="f-input" type="text" id="utm-propiedad" placeholder="Ej: apto_chapinero_304" oninput="buildTrackingLink()"/>
+            <div class="field-hint">Sin espacios. Ej: apto_suba, reel_balcon, historia_precio</div>
+          </div>
+          <div class="field-group full">
+            <div class="field-label">Campaña (opcional — agrupa varias publicaciones)</div>
+            <input class="f-input" type="text" id="utm-campana" placeholder="Ej: mayo_2025, lanzamiento_norte" oninput="buildTrackingLink()"/>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div style="font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em">Link generado</div>
+          <div class="link-box" id="tracking-box">
+            <span class="link-url placeholder" id="tracking-link-preview">Selecciona el origen y el inmueble para generar el link</span>
+            <button class="btn-copy" onclick="copyTrackingLink()" id="btn-copy-tracking">Copiar</button>
+          </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="link-history" id="link-history">
+          <div class="divider"></div>
+          <div class="link-history-title">Copiados esta sesión</div>
+          <div id="link-history-list"></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-links -->
+
+    <!-- ══ TAB: CONFIGURACIÓN ══ -->
+    <div class="tab-pane" id="tab-config">
+
+      <!-- Perfil del broker -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <div>
+            <div class="section-title">Tu perfil</div>
+            <div class="section-sub">Así apareces en la pantalla de bienvenida del formulario que ven tus clientes</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <div class="field-label">Tu nombre completo</div>
+            <input class="f-input" type="text" id="f-nombre" placeholder="Ej: Jessica Pinzón" oninput="updateHero()"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Inmobiliaria / respaldo</div>
+            <input class="f-input" type="text" id="f-inmobiliaria" placeholder="Ej: Brokers Inmobiliarios PT · Respaldada por Habi" oninput="updateHero()"/>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Logo (texto corto, esquina del formulario)</div>
+            <input class="f-input" type="text" id="f-logo" placeholder="Ej: HABI"/>
+            <div class="field-hint">Aparece en la esquina superior del formulario del cliente.</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Estado del formulario</div>
+            <select class="f-input" id="f-activo" onchange="syncStatusFromSelect()">
+              <option value="TRUE">✅ Activo — clientes pueden diligenciarlo</option>
+              <option value="FALSE">⏸ Pausado — formulario deshabilitado</option>
+            </select>
+          </div>
+          <div class="field-group full">
+            <div class="field-label">Mensaje de bienvenida</div>
+            <textarea class="f-input" id="f-mensaje-intro" placeholder="Ej: En menos de 3 minutos voy a entender qué estás buscando para mostrarte solo las opciones que realmente aplican para ti — sin hacerte perder el tiempo."></textarea>
+            <div class="field-hint">Aparece justo después de tu nombre en la pantalla inicial del formulario.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asesor -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">📞</div>
+          <div>
+            <div class="section-title">Asesor que contacta al lead</div>
+            <div class="section-sub">Esta persona recibe la ficha por WhatsApp y llama al cliente. Su nombre aparece en la pantalla final del formulario.</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <div class="field-label">Nombre del asesor</div>
+            <input class="f-input" type="text" id="f-asesor" placeholder="Ej: Rosa Martínez"/>
+            <div class="field-hint">El lead verá: "Rosa te contactará en breve".</div>
+          </div>
+          <div class="field-group">
+            <div class="field-label">WhatsApp del asesor</div>
+            <input class="f-input" type="tel" id="f-whatsapp" placeholder="573113875323"/>
+            <div class="field-hint">Con código de país, sin + ni espacios. Aquí llega la ficha de cada lead.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="actions-row">
+        <button class="btn-primary" onclick="saveConfig()" id="btn-save">💾 Guardar cambios</button>
+        <button class="btn-secondary" onclick="previewForm()">👁 Ver formulario</button>
+      </div>
+      <div class="last-updated">Última actualización: <span id="last-updated-val">—</span></div>
+
+    </div><!-- /tab-config -->
+
+    <!-- ══ TAB: MIS DATOS ══ -->
+    <div class="tab-pane" id="tab-datos">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-icon">🛡️</div>
+          <div>
+            <div class="section-title">Tus datos son tuyos — siempre</div>
+            <div class="section-sub">Cómo protegemos tu información y la de tus leads</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="privacy-box">
+            <span style="font-size:20px;flex-shrink:0">🏠</span>
+            <span><strong>Tus leads son tuyos.</strong> Toda la información capturada por el formulario se guarda directamente en tu Google Sheets personal. Nadie más tiene acceso — ni nosotros.</span>
+          </div>
+          <div class="privacy-box">
+            <span style="font-size:20px;flex-shrink:0">🔒</span>
+            <span><strong>Tu configuración está protegida.</strong> Solo tú puedes editar este panel con tu token privado. Los cambios se aplican en tiempo real sin intervención de terceros.</span>
+          </div>
+          <div class="privacy-box">
+            <span style="font-size:20px;flex-shrink:0">📊</span>
+            <span><strong>Control total.</strong> Puedes exportar, eliminar o mover tus datos cuando quieras desde tu Google Sheets. La plataforma no retiene copias de tu información.</span>
+          </div>
+          <div class="privacy-box">
+            <span style="font-size:20px;flex-shrink:0">📵</span>
+            <span><strong>Sin acceso de terceros.</strong> Los datos de tus clientes nunca se comparten con anunciantes, otras inmobiliarias ni ningún otro servicio externo.</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-datos -->
+
+  </div><!-- /admin-panel -->
+</div><!-- /app -->
+
+<script>
+// ── CONEXIONES — no modificar ──
+const N8N_GET_CONFIG  = 'https://n8n.noema.lat/webhook/broker-config';
+const N8N_POST_CONFIG = 'https://n8n.noema.lat/webhook/broker-config';
+const N8N_POST_LEAD   = 'https://n8n.noema.lat/webhook/process-lead';
+const FORMULARIO_URL  = 'https://noema.lat/perfilador/app';
+const DASHBOARD_URL   = 'https://noema.lat/perfilador/dashboard';
+
+let currentBrokerId = '';
+let currentToken    = '';
+const trackingHistory = [];
+
+// ── TABS ──
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── LOGIN ──
+async function loadConfig() {
+  const broker_id = document.getElementById('input-broker-id').value.trim().toLowerCase();
+  const token     = document.getElementById('input-token').value.trim();
+  const errEl     = document.getElementById('token-error');
+  errEl.style.display = 'none';
+
+  if (!broker_id || !token) {
+    errEl.textContent = 'Por favor ingresa tu ID y token.';
+    errEl.style.display = 'block'; return;
+  }
+
+  const btn = document.querySelector('#token-gate .btn-primary');
+  btn.disabled = true; btn.textContent = 'Entrando...';
+
+  try {
+    const res = await fetch(`${N8N_GET_CONFIG}?broker_id=${broker_id}`, {
+      headers: { 'ngrok-skip-browser-warning': 'true' }
+    });
+    if (res.status === 404) {
+      errEl.textContent = 'No encontramos un broker con ese ID.';
+      errEl.style.display = 'block'; return;
+    }
+    const config = await res.json();
+    if (config.error) {
+      errEl.textContent = 'No encontramos un broker con ese ID.';
+      errEl.style.display = 'block'; return;
+    }
+
+    currentBrokerId = broker_id;
+    currentToken    = token;
+
+    populateForm(config);
+    updateLinkPreview(broker_id);
+    updateHero();
+
+    document.getElementById('broker-chip').textContent = broker_id;
+    document.getElementById('broker-chip').style.display = 'block';
+    document.getElementById('token-gate').style.display  = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+
+  } catch(e) {
+    errEl.textContent = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar →';
+  }
+}
+
+// Enter key en login
+document.getElementById('input-token').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadConfig();
+});
+document.getElementById('input-broker-id').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('input-token').focus();
+});
+
+function populateForm(c) {
+  document.getElementById('f-nombre').value        = c.nombre        || '';
+  document.getElementById('f-inmobiliaria').value  = c.inmobiliaria  || '';
+  document.getElementById('f-logo').value          = c.logo          || '';
+  document.getElementById('f-activo').value        = c.activo        || 'TRUE';
+  document.getElementById('f-mensaje-intro').value = c.mensaje_intro || '';
+  document.getElementById('f-asesor').value        = c.asesor        || '';
+  document.getElementById('f-whatsapp').value      = c.whatsapp_destino || '';
+  document.getElementById('last-updated-val').textContent = c.updated_at || 'No registrada';
+  syncStatusUI(c.activo || 'TRUE');
+}
+
+function updateLinkPreview(broker_id) {
+  document.getElementById('link-preview').textContent = `${FORMULARIO_URL}?broker=${broker_id}`;
+}
+
+function updateHero() {
+  const nombre = document.getElementById('f-nombre').value || '—';
+  const inmob  = document.getElementById('f-inmobiliaria').value || '—';
+  document.getElementById('hero-nombre').textContent = nombre;
+  document.getElementById('hero-inmob').textContent  = inmob;
+}
+
+// ── ESTADO FORMULARIO ──
+function syncStatusUI(val) {
+  const on = val === 'TRUE';
+  document.getElementById('status-dot').className = 'status-dot ' + (on ? 'on' : 'off');
+  document.getElementById('status-label').textContent = on ? 'Formulario activo' : 'Formulario pausado';
+  document.getElementById('toggle-btn').textContent  = on ? 'Pausar formulario' : 'Activar formulario';
+}
+function syncStatusFromSelect() {
+  syncStatusUI(document.getElementById('f-activo').value);
+}
+function toggleFormStatus() {
+  const sel = document.getElementById('f-activo');
+  sel.value = sel.value === 'TRUE' ? 'FALSE' : 'TRUE';
+  syncStatusUI(sel.value);
+}
+
+// ── GUARDAR ──
+async function saveConfig() {
+  const btn = document.getElementById('btn-save');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Guardando...';
+
+  const payload = {
+    broker_id:        currentBrokerId,
+    token_admin:      currentToken,
+    activo:           document.getElementById('f-activo').value,
+    nombre:           document.getElementById('f-nombre').value.trim(),
+    inmobiliaria:     document.getElementById('f-inmobiliaria').value.trim(),
+    logo:             document.getElementById('f-logo').value.trim(),
+    asesor:           document.getElementById('f-asesor').value.trim(),
+    whatsapp_destino: document.getElementById('f-whatsapp').value.trim(),
+    mensaje_intro:    document.getElementById('f-mensaje-intro').value.trim()
+  };
+
+  try {
+    const res = await fetch(N8N_POST_CONFIG, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify(payload)
+    });
+    if (res.status === 401) { showStatus('❌ Token incorrecto. No se guardaron los cambios.','error'); return; }
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'ERROR');
+    showStatus('✅ Configuración guardada correctamente','success');
+    document.getElementById('last-updated-val').textContent = new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'});
+    updateHero();
+  } catch(e) {
+    showStatus('❌ Error al guardar. Verifica la conexión e intenta de nuevo.','error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Guardar cambios';
+  }
+}
+
+function showStatus(msg, type) {
+  const bar = document.getElementById('status-bar');
+  bar.textContent = msg;
+  bar.className   = type;
+  bar.style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => { bar.style.display = 'none'; }, 5000);
+}
+
+// ── LINKS ──
+function copyMainLink() {
+  const link = document.getElementById('link-preview').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('btn-copy-main');
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+  });
+}
+
+function previewForm() {
+  window.open(`${FORMULARIO_URL}?broker=${currentBrokerId}`, '_blank');
+}
+
+function openDashboard() {
+  window.open(`${DASHBOARD_URL}?broker_id=${currentBrokerId}&token=${currentToken}`, '_blank');
+}
+
+// ── TRACKING ──
+function buildTrackingLink() {
+  const origen    = document.getElementById('utm-origen').value;
+  const propiedad = document.getElementById('utm-propiedad').value.trim().replace(/\s+/g,'_');
+  const campana   = document.getElementById('utm-campana').value.trim().replace(/\s+/g,'_');
+  const preview   = document.getElementById('tracking-link-preview');
+  const box       = document.getElementById('tracking-box');
+
+  if (!origen || !propiedad) {
+    preview.textContent = 'Selecciona el origen y el inmueble para generar el link';
+    preview.className   = 'link-url placeholder';
+    box.classList.remove('highlight');
+    return;
+  }
+
+  let url = `${FORMULARIO_URL}?broker=${currentBrokerId || 'default'}`;
+  url += `&utm_source=${encodeURIComponent(origen)}`;
+  url += `&utm_medium=organic`;
+  url += `&utm_campaign=${encodeURIComponent(campana || 'general')}`;
+  url += `&propiedad=${encodeURIComponent(propiedad)}`;
+
+  preview.textContent = url;
+  preview.className   = 'link-url';
+  box.classList.add('highlight');
+}
+
+function copyTrackingLink() {
+  const text = document.getElementById('tracking-link-preview').textContent;
+  if (!text || text.includes('Selecciona')) return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy-tracking');
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+
+    // Historial
+    const origen    = document.getElementById('utm-origen').value;
+    const propiedad = document.getElementById('utm-propiedad').value.trim();
+    trackingHistory.unshift({ url: text, origen, propiedad, ts: new Date().toLocaleTimeString('es-CO') });
+    renderTrackingHistory();
+  });
+}
+
+function renderTrackingHistory() {
+  const wrap = document.getElementById('link-history');
+  const list = document.getElementById('link-history-list');
+  wrap.style.display = 'block';
+  list.innerHTML = trackingHistory.slice(0, 5).map(h =>
+    `<div class="history-item">
+      <div style="flex:1;min-width:0">
+        <div class="history-item-url">${h.url}</div>
+        <div class="history-item-meta">${h.origen} · ${h.propiedad} · ${h.ts}</div>
+      </div>
+      <button class="history-copy-btn" onclick="navigator.clipboard.writeText('${h.url.replace(/'/g,"\\'")}').then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='Copiar',1500)})">Copiar</button>
+    </div>`
+  ).join('');
+}
+
+// ── AUTO LOGIN POR URL ──
+const params = new URLSearchParams(window.location.search);
+if (params.get('broker') && params.get('token')) {
+  document.getElementById('input-broker-id').value = params.get('broker');
+  document.getElementById('input-token').value     = params.get('token');
+  loadConfig();
+}
+</script>
+</body>
+</html>

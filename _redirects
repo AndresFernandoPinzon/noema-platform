@@ -1,0 +1,47 @@
+# ========================================
+# REDIRECTS - NOEMA
+# ========================================
+
+# --- ENLACES EXTERNOS ---
+/linkedin       https://www.linkedin.com/posts/noema-framework-bi_diagn%C3%B3stico-de-madurez-anal%C3%ADtica-noema-activity-7391823616532959232-HSpr    302
+/agenda         https://calendar.app.google/4N6qVmu22KQFP2pR6      302
+
+
+# --- PÁGINAS PRINCIPALES ---
+/               /index.html             200!
+/nosotros       /nosotros.html          200!
+
+
+# --- PRODUCTO BI: DIAGNÓSTICO ICO ---
+/diagnostico    /productos/bi/diagnostico-ico/index.html    200
+
+
+# --- PRODUCTO CHATBOT: PERFILADOR INMOBILIARIO ---
+/perfilador/app        /productos/chatbot/perfilador/app.html        200
+/perfilador/admin      /productos/chatbot/perfilador/admin.html      200
+/perfilador/dashboard  /productos/chatbot/perfilador/dashboard.html  200
+/perfilador            /productos/chatbot/perfilador/index.html      200
+
+
+# --- POLÍTICAS ---
+/politica-datos     /politica-datos.html      200!
+/politica-cookies   /politica-cookies.html    200!
+
+
+# --- REDIRECTS DE PÁGINAS ANTIGUAS ---
+/diagnostico.html    /diagnostico       301
+/admin               /perfilador/admin  301
+/admin.html          /perfilador/admin  301
+/automatizacion      /diagnostico       301
+/mixto               /diagnostico       301
+/index               /                  301
+/index.html          /                  301
+
+
+# ========================================
+# NOTAS:
+# - 200! = Reescritura forzada, mantiene URL en navegador
+# - 200  = Reescritura normal, mantiene URL en navegador
+# - 301  = Redirect permanente, cambia URL
+# - 302  = Redirect temporal externo
+# ========================================

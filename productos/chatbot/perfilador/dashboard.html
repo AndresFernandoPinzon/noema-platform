@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — Mis Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#1B4FD8;--brand-dark:#1340B0;--brand-light:#EEF3FF;--brand-mid:#4F7BF7;
+  --hot:#DC2626;--hot-bg:#FEF2F2;--hot-border:#FECACA;--hot-light:#FFF5F5;
+  --warm:#D97706;--warm-bg:#FFFBEB;--warm-border:#FDE68A;--warm-light:#FFFDF0;
+  --cold:#2563EB;--cold-bg:#EFF6FF;--cold-border:#BFDBFE;--cold-light:#F0F7FF;
+  --success:#059669;--success-bg:#ECFDF5;--success-border:#6EE7B7;
+  --text:#111827;--text-2:#6B7280;--text-3:#9CA3AF;
+  --border:#E5E7EB;--surface:#F9FAFB;--white:#FFFFFF;
+  --radius:14px;--radius-sm:10px;--radius-xs:7px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 16px rgba(0,0,0,0.05);
+  --shadow-lg:0 4px 24px rgba(27,79,216,0.1),0 1px 4px rgba(0,0,0,0.06);
+}
+html,body{min-height:100vh;background:#F1F4FB;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--text)}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--brand);padding:0 24px;display:flex;align-items:stretch;justify-content:space-between;min-height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(27,79,216,0.25)}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-logo{font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+.topbar-div{width:1px;height:18px;background:rgba(255,255,255,0.25)}
+.topbar-title{font-size:13px;font-weight:500;color:rgba(255,255,255,0.8)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.refresh-btn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 13px;cursor:pointer;transition:all 0.15s}
+.refresh-btn:hover{background:rgba(255,255,255,0.22)}
+.refresh-btn.spinning svg{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.broker-chip{font-size:11px;font-weight:600;color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:20px}
+
+/* ── LAYOUT ── */
+#app{max-width:960px;margin:0 auto;padding:24px 16px 48px}
+
+/* ── ESTADO SCREENS ── */
+.state-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:12px}
+.state-icon{font-size:52px}
+.state-title{font-size:20px;font-weight:700;color:var(--text)}
+.state-sub{font-size:14px;color:var(--text-2);max-width:340px;line-height:1.6}
+.spinner{width:40px;height:40px;border:3px solid var(--brand-light);border-top-color:var(--brand);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
+
+/* ── RESUMEN STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px}
+.stat-label{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:0.07em}
+.stat-value{font-size:28px;font-weight:800;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.stat-card.hot{border-top:3px solid var(--hot)}
+.stat-card.warm{border-top:3px solid var(--warm)}
+.stat-card.cold{border-top:3px solid var(--cold)}
+.stat-card.total{border-top:3px solid var(--brand)}
+
+/* ── GUÍA RÁPIDA ── */
+.guide-box{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+
+.guide-title{
+  font-size:13px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:12px;
+}
+
+.guide-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.guide-item{
+  border-radius:var(--radius-xs);
+  padding:11px 12px;
+  border:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.guide-item strong{
+  font-size:12px;
+  font-weight:800;
+}
+
+.guide-item span{
+  font-size:11px;
+  line-height:1.5;
+  color:var(--text-2);
+}
+
+.hot-guide{
+  background:var(--hot-light);
+  border-color:var(--hot-border);
+}
+
+.warm-guide{
+  background:var(--warm-light);
+  border-color:var(--warm-border);
+}
+
+.cold-guide{
+  background:var(--cold-light);
+  border-color:var(--cold-border);
+}
+
+@media(max-width:700px){
+  .guide-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ── FILTROS ── */
+.filters-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-btn{font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--text-2);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px}
+.filter-btn:hover{border-color:#93A5FB;color:var(--brand)}
+.filter-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.filter-btn.hot-f.active{background:var(--hot);border-color:var(--hot);color:#fff}
+.filter-btn.warm-f.active{background:var(--warm);border-color:var(--warm);color:#fff}
+.filter-btn.cold-f.active{background:var(--cold);border-color:var(--cold);color:#fff}
+.filters-right{margin-left:auto;font-size:12px;color:var(--text-3);font-weight:500}
+
+
+/* ── LEAD CARD ── */
+.lead-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;transition:box-shadow 0.15s}
+.lead-card:hover{box-shadow:var(--shadow-lg)}
+.lead-card.nuevo-card{box-shadow:0 0 0 2px var(--brand),var(--shadow-lg)}
+
+/* Card header */
+.card-header{padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none;border-bottom:1px solid transparent;transition:background 0.12s}
+.lead-card.expanded .card-header{border-bottom-color:var(--border);background:var(--surface)}
+.card-header:hover{background:var(--surface)}
+
+.cat-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.cat-badge.CALIENTE{background:var(--hot-bg);color:var(--hot);border:1px solid var(--hot-border)}
+.cat-badge.TIBIO{background:var(--warm-bg);color:var(--warm);border:1px solid var(--warm-border)}
+.cat-badge.FRÍO,.cat-badge.FRIO{background:var(--cold-bg);color:var(--cold);border:1px solid var(--cold-border)}
+.cat-badge.DERIVAR{background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE}
+
+.score-ring{width:42px;height:42px;flex-shrink:0;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+
+.header-info{flex:1;min-width:0}
+.lead-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-meta{font-size:12px;color:var(--text-2);margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lead-meta span{display:flex;align-items:center;gap:3px}
+
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.wa-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#fff;background:#25D366;border:none;border-radius:var(--radius-xs);padding:8px 14px;cursor:pointer;text-decoration:none;transition:all 0.15s;white-space:nowrap}
+.wa-btn:hover{background:#1DA851;transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,211,102,0.35)}
+.toggle-btn{width:28px;height:28px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all 0.15s;color:var(--text-2);flex-shrink:0}
+.lead-card.expanded .toggle-btn{background:var(--brand-light);color:var(--brand);border-color:rgba(27,79,216,0.2)}
+.nuevo-badge{font-size:10px;font-weight:700;color:#fff;background:var(--brand);padding:2px 8px;border-radius:20px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+
+/* Card body (expandible) */
+.card-body{display:none;padding:0 20px 20px}
+.lead-card.expanded .card-body{display:block}
+
+/* Secciones dentro del card body */
+.body-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:16px}
+.body-section{padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius-xs);margin-bottom:12px}
+.body-section:last-child{margin-bottom:0}
+.section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--text-2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.data-row{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;font-size:13px;border-bottom:1px solid #F9FAFB;gap:8px}
+.data-row:last-child{border-bottom:none}
+.data-key{color:var(--text-2);flex-shrink:0;min-width:110px}
+.data-val{color:var(--text);font-weight:600;text-align:right;word-break:break-word}
+.data-val.nota{font-weight:400;font-style:italic;color:var(--text-2);text-align:left}
+
+/* Pills de datos */
+.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--brand-light);color:var(--brand)}
+.pill.green{background:var(--success-bg);color:var(--success)}
+.pill.orange{background:var(--warm-bg);color:var(--warm)}
+.pill.red{background:var(--hot-bg);color:var(--hot)}
+.pill.gray{background:#F3F4F6;color:var(--text-2)}
+
+/* Acción recomendada */
+.accion-box{background:linear-gradient(135deg,var(--brand-light) 0%,#F0FDF9 100%);border:1px solid rgba(27,79,216,0.15);border-radius:var(--radius-xs);padding:12px 14px;margin-top:12px}
+.accion-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:var(--brand);margin-bottom:8px}
+.accion-items{display:flex;flex-direction:column;gap:5px}
+.accion-item{display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text)}
+.accion-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0;margin-top:5px}
+
+/* Tracking pills */
+.tracking-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}
+.utm-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3F4F6;color:var(--text-2)}
+.utm-pill.has-val{background:var(--brand-light);color:var(--brand)}
+
+/* NUEVO indicator strip */
+.nuevo-strip{background:linear-gradient(90deg,var(--brand) 0%,var(--brand-mid) 100%);height:3px;width:100%}
+
+/* Score bar */
+.score-bar-wrap{margin-top:10px}
+.score-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:5px}
+.score-bar-track{height:6px;background:#F3F4F6;border-radius:3px;overflow:hidden}
+.score-bar-fill{height:6px;border-radius:3px;transition:width 0.6s cubic-bezier(.4,0,.2,1)}
+
+/* Empty, no leads */
+.empty-state{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:48px;text-align:center;box-shadow:var(--shadow)}
+
+/* Timestamp */
+.last-refresh{font-size:11px;color:var(--text-3);text-align:right;margin-bottom:16px;font-weight:500}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .header-actions .wa-btn span{display:none}
+  .topbar-title{display:none}
+  .card-header{padding:12px 14px}
+  .card-body{padding:0 14px 14px}
+}
+
+/* ── MOBILE FIX DASHBOARD ── */
+.lead-detail-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:16px;
+}
+
+@media(max-width:600px){
+
+  .card-header{
+    display:grid;
+    grid-template-columns:56px 1fr 52px 36px;
+    gap:10px;
+    align-items:center;
+  }
+
+  .cat-badge{
+    grid-column:1 / 3;
+    justify-self:start;
+    margin-top:8px;
+  }
+
+  .header-info{
+    grid-column:2 / 5;
+    grid-row:1;
+  }
+
+  .header-actions{
+    grid-column:3 / 5;
+    grid-row:2;
+    justify-content:flex-end;
+  }
+
+  .nuevo-badge{
+    display:none;
+  }
+
+  .lead-detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .data-row{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:4px;
+  }
+
+  .data-key{
+    min-width:0;
+    font-size:11px;
+  }
+
+  .data-val{
+    width:100%;
+    text-align:left;
+    font-size:12px;
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .pill{
+    white-space:normal;
+    text-align:left;
+    line-height:1.4;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">Brokertools</div>
+    <div class="topbar-div"></div>
+    <div class="topbar-title">Mis Leads</div>
+  </div>
+  <div class="topbar-right">
+    <div class="broker-chip" id="broker-chip">—</div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadLeads()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+      Actualizar
+    </button>
+  </div>
+</div>
+
+<div id="app">
+  <!-- Loading -->
+  <div id="state-loading" class="state-screen">
+    <div class="spinner"></div>
+    <div class="state-title">Cargando tus leads...</div>
+    <div class="state-sub">Conectando con tu base de datos</div>
+  </div>
+
+  <!-- No auth -->
+  <div id="state-noauth" class="state-screen" style="display:none">
+    <div class="state-icon">🔐</div>
+    <div class="state-title">Acceso no autorizado</div>
+    <div class="state-sub">Este dashboard requiere un link válido con tu broker_id y token.</div>
+  </div>
+
+  <!-- Error -->
+  <div id="state-error" class="state-screen" style="display:none">
+    <div class="state-icon">⚠️</div>
+    <div class="state-title">Error al cargar los datos</div>
+    <div class="state-sub">No pudimos conectarnos al servidor. Intenta actualizando la página.</div>
+    <button onclick="loadLeads()" style="margin-top:16px;padding:10px 22px;font-size:13px;font-weight:700;color:#fff;background:var(--brand);border:none;border-radius:var(--radius-xs);cursor:pointer">Reintentar</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="state-dashboard" style="display:none">
+    <div class="last-refresh" id="last-refresh">—</div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- Guía rápida -->
+    <div class="guide-box">
+      <div class="guide-title">💡 Cómo interpretar los leads</div>
+
+      <div class="guide-grid">
+        <div class="guide-item hot-guide">
+          <strong>🔴 Caliente</strong>
+          <span>Cliente listo para avanzar. Llamar hoy, validar disponibilidad y proponer 2–3 opciones.</span>
+        </div>
+
+        <div class="guide-item warm-guide">
+          <strong>🟡 Tibio</strong>
+          <span>Interesado, pero con fricción. Contactar en el día e identificar bloqueo: crédito, cuota o decisión.</span>
+        </div>
+
+        <div class="guide-item cold-guide">
+          <strong>🔵 Frío</strong>
+          <span>No está listo todavía. No priorizar visita; nutrir y hacer seguimiento más adelante.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-row" id="filters-row">
+      <button class="filter-btn active" onclick="setFilter('todos',this)">Todos</button>
+      <button class="filter-btn hot-f" onclick="setFilter('CALIENTE',this)">🔴 Calientes</button>
+      <button class="filter-btn warm-f" onclick="setFilter('TIBIO',this)">🟡 Tibios</button>
+      <button class="filter-btn cold-f" onclick="setFilter('FRÍO',this)">🔵 Fríos</button>
+      <div class="filters-right" id="filter-count"></div>
+    </div>
+
+    <!-- Leads -->
+    <div id="leads-container"></div>
+  </div>
+</div>
+
+<script>
+// ── CONEXIÓN — no modificar ──
+const params    = new URLSearchParams(window.location.search);
+const broker_id = params.get('broker_id');
+const token     = params.get('token');
+const WH_URL    = `https://n8n.noema.lat/webhook/broker-leads?broker_id=${broker_id}&token=${token}`;
+
+// ── ESTADO ──
+let allLeads    = [];
+let activeFilter = 'todos';
+
+// ── INIT ──
+if (!broker_id || !token) {
+  showState('noauth');
+} else {
+  document.getElementById('broker-chip').textContent = broker_id;
+  loadLeads();
+  // Auto-refresh cada 60 segundos
+  setInterval(loadLeads, 60000);
+}
+
+// ── CARGAR LEADS ──
+async function loadLeads() {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+
+  try {
+    const res  = await fetch(WH_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    allLeads   = Array.isArray(data) ? data : [];
+    renderDashboard();
+    showState('dashboard');
+    document.getElementById('last-refresh').textContent =
+      'Última actualización: ' + new Date().toLocaleTimeString('es-CO', {timeZone:'America/Bogota'});
+  } catch(e) {
+    if (allLeads.length === 0) showState('error');
+  } finally {
+    btn.classList.remove('spinning');
+  }
+}
+
+// ── RENDER PRINCIPAL ──
+function renderDashboard() {
+  renderStats();
+  renderLeads();
+}
+
+// ── STATS ──
+function renderStats() {
+  const total    = allLeads.length;
+  const caliente = allLeads.filter(l => l.categoria === 'CALIENTE').length;
+  const tibio    = allLeads.filter(l => l.categoria === 'TIBIO').length;
+  const frio     = allLeads.filter(l => ['FRÍO','FRIO'].includes(l.categoria)).length;
+  const avgScore = total ? Math.round(allLeads.reduce((a,l)=>a+(parseInt(l.score)||0),0)/total) : 0;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card total">
+      <div class="stat-label">Total leads</div>
+      <div class="stat-value">${total}</div>
+      <div class="stat-sub">Score promedio: ${avgScore}/100</div>
+    </div>
+    <div class="stat-card hot">
+      <div class="stat-label">🔴 Calientes</div>
+      <div class="stat-value" style="color:var(--hot)">${caliente}</div>
+      <div class="stat-sub">Contactar hoy</div>
+    </div>
+    <div class="stat-card warm">
+      <div class="stat-label">🟡 Tibios</div>
+      <div class="stat-value" style="color:var(--warm)">${tibio}</div>
+      <div class="stat-sub">Contactar en el día</div>
+    </div>
+    <div class="stat-card cold">
+      <div class="stat-label">🔵 Fríos / Derivar</div>
+      <div class="stat-value" style="color:var(--cold)">${frio}</div>
+      <div class="stat-sub">Nutrir / HabiCrédito</div>
+    </div>`;
+}
+
+// ── FILTRO ──
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeads();
+}
+
+// ── RENDER LEADS ──
+function renderLeads() {
+  const filtered = activeFilter === 'todos'
+    ? allLeads
+    : allLeads.filter(l => {
+        if (activeFilter === 'FRÍO') return ['FRÍO','FRIO'].includes(l.categoria);
+        return l.categoria === activeFilter;
+      });
+
+  document.getElementById('filter-count').textContent =
+    filtered.length + ' lead' + (filtered.length !== 1 ? 's' : '');
+
+  const container = document.getElementById('leads-container');
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div style="font-size:40px;margin-bottom:12px">🔍</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">Sin leads en esta categoría</div>
+        <div style="font-size:13px;color:var(--text-2)">Prueba con otro filtro o espera nuevos leads.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach((lead, idx) => {
+    container.appendChild(buildCard(lead, idx === 0 && activeFilter === 'todos'));
+  });
+}
+
+// ── CONSTRUIR CARD ──
+function buildCard(lead, isNuevo) {
+  const score    = parseInt(lead.score) || 0;
+  const cat      = lead.categoria || 'FRÍO';
+  const waNum    = (lead.celular || '').replace(/\D/g,'');
+  const waLink   = waNum ? `https://wa.me/57${waNum}?text=Hola%20${encodeURIComponent(lead.nombre||'')},%20te%20contacto%20por%20tu%20búsqueda%20de%20apartamento.` : '#';
+
+  // Color del score ring
+  const scoreColor = score >= 70 ? '#DC2626' : score >= 40 ? '#D97706' : '#2563EB';
+  const circumference = 2 * Math.PI * 16;
+  const dash = (score / 100) * circumference;
+
+  // Pill de categoría con emoji
+  const catEmoji = {CALIENTE:'🔴', TIBIO:'🟡', 'FRÍO':'🔵', FRIO:'🔵', DERIVAR:'🟣'};
+  const catClass = cat.replace('Í','I');
+
+  // Notas — solo si tienen contenido
+  const notas = [
+    lead.nota_comprador, lead.nota_habitaciones,
+    lead.nota_ascensor, lead.nota_anteriores, lead.nota_credito
+  ].filter(Boolean);
+
+  // Acciones
+  const acciones = (lead.accion_recomendada || '')
+    .split('|').map(s => s.trim()).filter(Boolean);
+
+  // Score bar color
+  const barColor = score >= 70 ? 'var(--hot)' : score >= 40 ? 'var(--warm)' : 'var(--cold)';
+
+  // Formatear presupuesto
+  const presMap = {
+    'hasta_200':'Hasta $200M','200_300':'$200M – $300M','300_500':'$300M – $500M',
+    '500_800':'$500M – $800M','mas_800':'Más de $800M','no_definido':'No definido'
+  };
+  const presupuesto = presMap[lead.presupuesto] || lead.presupuesto || '-';
+
+  const card = document.createElement('div');
+  card.className = 'lead-card' + (isNuevo ? ' nuevo-card' : '');
+  card.dataset.id = lead.lead_id || Math.random();
+
+  card.innerHTML = `
+    ${isNuevo ? '<div class="nuevo-strip"></div>' : ''}
+    <div class="card-header" onclick="toggleCard(this.closest('.lead-card'))">
+      <!-- Score ring -->
+      <div class="score-ring">
+        <svg width="42" height="42" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="16" fill="none" stroke="#F3F4F6" stroke-width="4"/>
+          <circle cx="21" cy="21" r="16" fill="none" stroke="${scoreColor}" stroke-width="4"
+            stroke-dasharray="${dash.toFixed(1)} ${circumference.toFixed(1)}"
+            stroke-linecap="round"/>
+        </svg>
+        <div class="score-num">${score}</div>
+      </div>
+
+      <!-- Categoría -->
+      <div class="cat-badge ${catClass}">${catEmoji[cat]||'•'} ${cat}</div>
+
+      <!-- Nombre + meta -->
+      <div class="header-info">
+        <div class="lead-name">${escHtml(lead.nombre || 'Sin nombre')}</div>
+        <div class="lead-meta">
+          <span>📍 ${escHtml(lead.zona || '-')}</span>
+          <span>🏠 ${escHtml(lead.habitaciones || '-')} hab</span>
+          <span style="color:var(--text-3)">· ${escHtml(lead.timestamp || '')}</span>
+        </div>
+      </div>
+
+      ${isNuevo ? '<div class="nuevo-badge">NUEVO</div>' : ''}
+
+      <div class="header-actions">
+        <a class="wa-btn" href="${waLink}" target="_blank" onclick="event.stopPropagation()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>WhatsApp</span>
+        </a>
+        <div class="toggle-btn">▼</div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <!-- Score bar -->
+      <div class="score-bar-wrap">
+        <div class="score-bar-label">
+          <span>Score de calidad</span>
+          <span style="font-weight:700;color:${scoreColor}">${score}/100</span>
+        </div>
+        <div class="score-bar-track">
+          <div class="score-bar-fill" style="width:${score}%;background:${barColor}"></div>
+        </div>
+      </div>
+
+      <!-- Grid 2 cols -->
+      <div class="lead-detail-grid">
+
+        <!-- Perfil de compra -->
+        <div class="body-section">
+          <div class="section-title">🏠 Perfil de compra</div>
+          <div class="data-row"><span class="data-key">Busca para</span><span class="data-val">${escHtml(lead.comprador||'-')}</span></div>
+          <div class="data-row"><span class="data-key">Habitaciones</span><span class="data-val">${escHtml(lead.habitaciones||'-')}</span></div>
+          <div class="data-row"><span class="data-key">Parqueadero</span><span class="data-val">${escHtml(lead.parqueadero||'-')}</span></div>
+          <div class="data-row"><span class="data-key">Ascensor</span><span class="data-val">${escHtml(lead.ascensor||'-')}</span></div>
+          <div class="data-row"><span class="data-key">Presupuesto</span><span class="data-val">${escHtml(presupuesto)}</span></div>
+          <div class="data-row"><span class="data-key">Zona</span><span class="data-val">${escHtml(lead.zona||'-')}</span></div>
+          <div class="data-row"><span class="data-key">Flexible de zona</span><span class="data-val">${lead.zona_flex==='si'?'Sí':'No'}</span></div>
+        </div>
+
+        <!-- Financiero -->
+          <div class="body-section">
+            <div class="section-title">💰 Perfil financiero</div>
+
+            <div class="data-row"><span class="data-key">Crédito</span>
+              <span class="data-val">
+                ${lead.credito==='aprobado'?'<span class="pill green">Aprobado ✓</span>':lead.credito==='proceso'?'<span class="pill orange">En proceso</span>':'<span class="pill red">Sin iniciar</span>'}
+              </span>
+            </div>
+
+            <div class="data-row"><span class="data-key">Banco / monto</span><span class="data-val">${escHtml(lead.nota_credito||'—')}</span></div>
+
+            <div class="data-row"><span class="data-key">Cuota inicial</span>
+              <span class="data-val">
+                ${lead.cuota==='disponible'?'<span class="pill green">Disponible ✓</span>':lead.cuota==='pronto'?'<span class="pill orange">En 1–2 meses</span>':lead.cuota==='activo'?'<span class="pill orange">Activo/CDT</span>':'<span class="pill red">Ahorrando</span>'}
+              </span>
+            </div>
+
+            <div class="data-row"><span class="data-key">Recursos propios</span>
+              <span class="data-val">
+                ${lead.recursos_propios==='si_disponibles'
+                  ? '<span class="pill green">Sí disponibles</span>'
+                  : lead.recursos_propios==='parcial'
+                    ? '<span class="pill orange">Parcial</span>'
+                    : lead.recursos_propios==='dependen_de_algo'
+                      ? '<span class="pill orange">Dependen de algo</span>'
+                      : lead.recursos_propios==='no'
+                        ? '<span class="pill red">No</span>'
+                        : '<span class="pill gray">—</span>'}
+              </span>
+            </div>
+
+            <div class="data-row"><span class="data-key">Decisores</span><span class="data-val">${escHtml(lead.decisores||'-')}</span></div>
+
+            <div class="data-row"><span class="data-key">Listo para comprar</span>
+              <span class="data-val">
+                ${lead.listo==='si'?'<span class="pill green">Sí, avanza</span>':lead.listo==='quizas'?'<span class="pill orange">Quizás</span>':'<span class="pill gray">Solo mirando</span>'}
+              </span>
+            </div>
+
+            <div class="data-row"><span class="data-key">Aptos vistos</span><span class="data-val">${escHtml(lead.vistos||'-')}</span></div>
+
+            ${lead.horario ? `<div class="data-row"><span class="data-key">Horario llamada</span><span class="data-val">${escHtml(lead.horario)}</span></div>` : ''}
+          </div>
+        </div>
+
+      <!-- Notas importantes -->
+      ${notas.length ? `
+      <div class="body-section" style="margin-top:12px">
+        <div class="section-title">📝 Notas del lead</div>
+        ${notas.map(n => `<div class="data-row"><span class="data-val nota">"${escHtml(n)}"</span></div>`).join('')}
+      </div>` : ''}
+
+      <!-- Acción recomendada -->
+      ${acciones.length ? `
+      <div class="accion-box">
+        <div class="accion-title">⚡ Acción recomendada</div>
+        <div class="accion-items">
+          ${acciones.map(a => `<div class="accion-item"><div class="accion-dot"></div>${escHtml(a)}</div>`).join('')}
+        </div>
+      </div>` : ''}
+
+      <!-- Tracking -->
+      <div style="margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:600;color:var(--text-2)">📡 Tracking:</span>
+        <span class="utm-pill ${lead.utm_source?'has-val':''}">origen: ${escHtml(lead.utm_source||'directo')}</span>
+        <span class="utm-pill ${lead.utm_medium?'has-val':''}">publicación: ${escHtml(lead.utm_medium||'—')}</span>
+        <span class="utm-pill ${lead.utm_campaign?'has-val':''}">campaña: ${escHtml(lead.utm_campaign||'—')}</span>
+      </div>
+
+      <!-- Estado -->
+      <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--text-3)">
+          Estado: <strong style="color:var(--text)">${escHtml(lead.estado||'nuevo')}</strong>
+          · Tipo: <strong style="color:var(--text)">${escHtml(lead.tipo_lead||'—')}</strong>
+        </span>
+        <span style="font-size:11px;color:var(--text-3)">${escHtml(lead.lead_id||'')}</span>
+      </div>
+    </div>
+  `;
+
+  return card;
+}
+
+// ── TOGGLE EXPAND ──
+function toggleCard(card) {
+  const isOpen = card.classList.contains('expanded');
+  // Cerrar todos
+  document.querySelectorAll('.lead-card.expanded').forEach(c => {
+    c.classList.remove('expanded');
+    c.querySelector('.toggle-btn').textContent = '▼';
+  });
+  if (!isOpen) {
+    card.classList.add('expanded');
+    card.querySelector('.toggle-btn').textContent = '▲';
+  }
+}
+
+// ── HELPERS ──
+function showState(s) {
+  ['loading','noauth','error','dashboard'].forEach(id => {
+    document.getElementById('state-'+id).style.display = id===s ? (id==='dashboard'?'block':'flex') : 'none';
+  });
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

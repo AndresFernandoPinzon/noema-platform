@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOEMA | Chatbots y Automatización para WhatsApp Business · Bogotá, Colombia</title>
+<meta name="description" content="NOEMA implementa chatbots y flujos de automatización en WhatsApp Business para empresas en Colombia. Atención al cliente 24/7, captura de leads y agendamiento automático.">
+<link rel="canonical" href="https://noema.lat">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e5e7eb;
+  --primary:#2563eb;
+  --primary-light:#eff6ff;
+  --primary-glow:rgba(37,99,235,0.15);
+  --primary-glow-strong:rgba(37,99,235,0.25);
+  --grid-color:rgba(37,99,235,0.06);
+  --dot-color:rgba(37,99,235,0.18);
+  --whatsapp:#25D366;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 56px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:100;
+}
+.logo{font-weight:700;font-size:20px;letter-spacing:2px;position:relative}
+.logo::after{content:'';position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:var(--primary);transform:scaleX(0);transform-origin:left;transition:transform 0.3s ease}
+.logo:hover::after{transform:scaleX(1)}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:var(--muted);font-size:14px;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.nav-cta{
+  background:var(--primary);color:#fff;padding:8px 18px;border-radius:8px;font-weight:600;font-size:13px;transition:all 0.2s
+}
+.nav-links a.nav-cta:hover{background:#1d4ed8;transform:translateY(-1px)}
+
+/* ── HERO ── */
+.hero-wrap{position:relative;overflow:hidden;background:#fff}
+.hero-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero{position:relative;z-index:1;padding:100px 56px 90px;max-width:1100px}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--primary-light);border:1px solid rgba(37,99,235,0.2);
+  border-radius:100px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--primary);
+  margin-bottom:24px;opacity:0;animation:fadeUp 0.6s 0.1s ease forwards
+}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+.hero h1{font-size:clamp(40px,5vw,64px);line-height:1.1;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s 0.2s ease forwards}
+.hero span{color:var(--primary)}
+.hero span.wa{color:var(--whatsapp)}
+.hero p{color:var(--muted);font-size:18px;max-width:640px;opacity:0;animation:fadeUp 0.6s 0.35s ease forwards}
+.actions{margin-top:32px;display:flex;gap:16px;flex-wrap:wrap;opacity:0;animation:fadeUp 0.6s 0.45s ease forwards}
+.hero-trust{margin-top:20px;color:var(--muted);font-size:14px;max-width:640px;opacity:0;animation:fadeUp 0.6s 0.55s ease forwards}
+
+/* ── STAT STRIP ── */
+.stat-strip{position:relative;z-index:1;display:flex;gap:0;border-top:1px solid var(--border);padding:0 56px;opacity:0;animation:fadeUp 0.6s 0.6s ease forwards}
+.stat-item{padding:28px 40px 28px 0;flex:1;border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-size:28px;font-weight:700;color:var(--primary);display:block}
+.stat-label{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* ── BUTTONS ── */
+.btn-primary{background:var(--primary);color:#fff;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;transition:all 0.2s;box-shadow:0 0 0 0 var(--primary-glow)}
+.btn-primary:hover{background:#1d4ed8;box-shadow:0 0 20px 4px var(--primary-glow-strong);transform:translateY(-1px)}
+.btn-wa{background:var(--whatsapp);color:#fff;padding:12px 24px;border-radius:8px;font-weight:600;font-size:14px;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-wa:hover{background:#1da851;transform:translateY(-1px);box-shadow:0 0 20px 4px rgba(37,211,102,0.25)}
+.btn-secondary{border:1px solid var(--border);padding:12px 24px;border-radius:8px;font-size:14px;transition:all 0.2s;color:var(--text)}
+.btn-secondary:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+
+/* ── SECTIONS ── */
+.section{padding:80px 56px;border-top:1px solid var(--border)}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--primary);margin-bottom:12px}
+.section h2{font-size:32px;margin-bottom:16px}
+.section p{color:var(--muted);max-width:700px}
+
+/* ── FEATURE GRID ── */
+.grid{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{margin-top:40px;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{border:1px solid var(--border);padding:28px 24px;border-radius:12px;background:#fafafa;transition:all 0.3s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(37,99,235,0.04) 0%,transparent 60%);opacity:0;transition:opacity 0.3s}
+.card:hover{border-color:rgba(37,99,235,0.3);transform:translateY(-4px);box-shadow:0 12px 40px rgba(37,99,235,0.1)}
+.card:hover::before{opacity:1}
+.card.card-wa{border-color:rgba(37,211,102,0.25);background:#f0fdf4}
+.card.card-wa:hover{border-color:rgba(37,211,102,0.5);box-shadow:0 12px 40px rgba(37,211,102,0.12)}
+.card-icon{width:40px;height:40px;border-radius:10px;background:var(--primary-light);border:1px solid rgba(37,99,235,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.card-icon.wa{background:#f0fdf4;border-color:rgba(37,211,102,0.25)}
+.card-icon svg{width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card-icon.wa svg{stroke:#25D366}
+.card h3{margin-bottom:8px;font-size:17px}
+.card p{font-size:14px;color:var(--muted)}
+
+/* ── WA BADGE ── */
+.wa-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#f0fdf4;border:1px solid rgba(37,211,102,0.35);
+  border-radius:100px;padding:4px 12px;font-size:12px;font-weight:700;
+  color:#16a34a;margin-bottom:8px
+}
+
+/* ── HOW WE WORK - STEPS ── */
+.steps{margin-top:40px;display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.steps::before{content:'';position:absolute;top:24px;left:calc(12.5% + 8px);right:calc(12.5% + 8px);height:1px;background:var(--border);z-index:0}
+.step{padding:0 16px;text-align:center;position:relative;z-index:1}
+.step-num{width:48px;height:48px;border-radius:50%;border:1px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--primary);margin:0 auto 16px;transition:all 0.3s}
+.step:hover .step-num{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 0 0 6px var(--primary-glow)}
+.step h4{font-size:15px;margin-bottom:6px}
+.step p{font-size:13px;color:var(--muted)}
+
+/* ── PRODUCTS ── */
+.products{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.product-card{border:1px solid var(--border);padding:32px;border-radius:16px;background:#fafafa;position:relative;overflow:hidden;transition:all 0.3s}
+.product-detail{margin-top:-10px;font-size:13px;color:#334155;font-weight:500}
+.product-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--primary);transform:scaleX(0);transform-origin:left;transition:transform 0.4s ease}
+.product-card:hover{border-color:rgba(37,99,235,0.25);box-shadow:0 16px 48px rgba(37,99,235,0.08);transform:translateY(-3px)}
+.product-card:hover::after{transform:scaleX(1)}
+.product-card h3{font-size:20px;margin-bottom:10px}
+.product-card p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.product-card a{font-size:14px;font-weight:600;color:var(--primary);display:inline-flex;align-items:center;gap:6px;transition:gap 0.2s}
+.product-card:hover a{gap:10px}
+
+/* ── USE CASES ── */
+.use-cases{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.use-case{border:1px solid var(--border);padding:24px;border-radius:12px;background:#fafafa}
+.use-case-industry{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--primary);margin-bottom:8px}
+.use-case h4{font-size:16px;margin-bottom:8px}
+.use-case p{font-size:13px;color:var(--muted)}
+
+/* ── CONTACT SECTION ── */
+.contact-grid{margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.contact-info{display:flex;flex-direction:column;gap:20px}
+.contact-item{display:flex;align-items:flex-start;gap:14px}
+.contact-item-icon{width:40px;height:40px;border-radius:10px;background:var(--primary-light);border:1px solid rgba(37,99,235,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-item-icon svg{width:18px;height:18px;stroke:var(--primary);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.contact-item-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px}
+.contact-item-value{font-size:15px;font-weight:600;color:var(--text)}
+.contact-item-value a{color:var(--primary);transition:color 0.2s}
+.contact-item-value a:hover{color:#1d4ed8}
+.contact-box{border:1px solid var(--border);border-radius:16px;padding:32px;background:#fafafa}
+.contact-box h3{font-size:20px;margin-bottom:8px}
+.contact-box p{font-size:14px;color:var(--muted);margin-bottom:24px}
+.contact-box .btn-primary{display:inline-block;width:100%;text-align:center;padding:14px}
+
+/* ── CTA ── */
+.cta-section{background:var(--primary);padding:80px 56px;text-align:center;position:relative;overflow:hidden}
+.cta-bg{position:absolute;inset:0;pointer-events:none}
+.cta-section .section-inner{position:relative;z-index:1}
+.cta-section h2{font-size:36px;color:#fff;margin-bottom:12px}
+.cta-section p{color:rgba(255,255,255,0.75);max-width:500px;margin:0 auto 28px;font-size:16px}
+.btn-white{background:#fff;color:var(--primary);padding:14px 28px;border-radius:8px;font-weight:700;font-size:15px;transition:all 0.2s;display:inline-block}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+
+/* ── FOOTER ── */
+footer{padding:40px 56px;border-top:1px solid var(--border);background:#fafafa}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:32px;margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.footer-brand .footer-logo{font-weight:700;font-size:18px;letter-spacing:2px;margin-bottom:8px}
+.footer-brand p{font-size:13px;color:var(--muted);max-width:280px;line-height:1.6}
+.footer-contact{display:flex;flex-direction:column;gap:8px}
+.footer-contact-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.footer-contact-item svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.footer-contact-item a{color:var(--muted);transition:color 0.2s}
+.footer-contact-item a:hover{color:var(--primary)}
+.footer-links{display:flex;flex-direction:column;gap:8px}
+.footer-links-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:4px}
+.footer-links a{font-size:13px;color:var(--muted);transition:color 0.2s}
+.footer-links a:hover{color:var(--text)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.footer-bottom p{font-size:13px;color:var(--muted)}
+.footer-bottom-links{display:flex;gap:16px}
+.footer-bottom-links a{font-size:13px;color:var(--muted);transition:color 0.2s}
+.footer-bottom-links a:hover{color:var(--text)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav,.hero,.section,footer{padding-left:20px;padding-right:20px}
+  .stat-strip{padding-left:20px;padding-right:20px}
+  .grid,.grid-4,.use-cases{grid-template-columns:1fr}
+  .products{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:24px}
+  .steps::before{display:none}
+  .stat-strip{flex-wrap:wrap}
+  .stat-item{flex:1 1 45%;border-right:none;border-bottom:1px solid var(--border)}
+  .cta-section{padding:60px 20px}
+  .contact-grid{grid-template-columns:1fr}
+  .footer-top{flex-direction:column}
+  footer{padding:40px 20px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="logo">NOEMA</a>
+  <div class="nav-links">
+    <a href="/servicios">Servicios</a>
+    <a href="/nosotros">Nosotros</a>
+    <a href="/contacto" class="nav-cta">Contacto</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="pulse-dot"></span>
+      WhatsApp Business · Chatbots · Automatización
+    </div>
+
+    <h1>
+      Automatizamos la atención<br>de tus clientes en <span class="wa">WhatsApp</span>.
+    </h1>
+
+    <p>
+      NOEMA implementa chatbots y flujos automatizados en <strong>WhatsApp Business</strong> para empresas.
+      Responde clientes 24/7, agenda servicios y califica leads — sin intervención manual.
+    </p>
+
+    <div class="actions">
+      <a href="/contacto" class="btn-primary">Solicitar diagnóstico gratis</a>
+      <a href="/servicios" class="btn-secondary">Ver servicios →</a>
+    </div>
+
+    <p class="hero-trust">
+      Trabajamos con empresas en Colombia que usan WhatsApp Business como canal principal de atención y ventas.
+    </p>
+  </section>
+
+  <!-- STAT STRIP -->
+  <div class="stat-strip">
+    <div class="stat-item">
+      <span class="stat-num" data-count="24" data-suffix="/7">0/7</span>
+      <span class="stat-label">Atención automática en WhatsApp</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-count="80" data-suffix="%">0%</span>
+      <span class="stat-label">Consultas respondidas sin agente</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-count="3" data-suffix=" días">0 días</span>
+      <span class="stat-label">Tiempo promedio de implementación</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-count="100" data-suffix="%">0%</span>
+      <span class="stat-label">Integrado con WhatsApp Business API</span>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+  <div class="section-inner">
+    <span class="section-tag reveal">Servicios</span>
+    <h2 class="reveal">Lo que implementamos para tu empresa</h2>
+    <p class="reveal">
+      Soluciones concretas para automatizar la atención al cliente, capturar leads y gestionar
+      operaciones comerciales a través de WhatsApp Business y otros canales digitales.
+    </p>
+
+    <div class="grid" style="margin-top:40px">
+
+      <div class="card card-wa reveal">
+        <div class="wa-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp Business
+        </div>
+        <div class="card-icon wa">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3>Chatbots para WhatsApp</h3>
+        <p>Flujos conversacionales automatizados que responden preguntas frecuentes, califican leads y dirigen al usuario al equipo correcto.</p>
+      </div>
+
+      <div class="card card-wa reveal" style="transition-delay:0.1s">
+        <div class="wa-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp Business
+        </div>
+        <div class="card-icon wa">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3>Agendamiento automático</h3>
+        <p>El cliente agenda su cita directamente desde WhatsApp. Integración con Google Calendar y confirmaciones automáticas incluidas.</p>
+      </div>
+
+      <div class="card card-wa reveal" style="transition-delay:0.2s">
+        <div class="wa-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp Business
+        </div>
+        <div class="card-icon wa">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Captura y calificación de leads</h3>
+        <p>Identifica automáticamente qué tipo de cliente escribe, califica el interés y registra los datos en tu CRM o Google Sheets.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3>Dashboards y analítica</h3>
+        <p>Visualización ejecutiva de métricas de atención, volumen de conversaciones y rendimiento del bot en tiempo real.</p>
+      </div>
+
+      <div class="card reveal" style="transition-delay:0.1s">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+        </div>
+        <h3>Automatización de procesos</h3>
+        <p>Flujos digitales que eliminan tareas manuales repetitivas: notificaciones, seguimientos, recordatorios y actualizaciones de estado.</p>
+      </div>
+
+      <div class="card reveal" style="transition-delay:0.2s">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <h3>Integraciones con IA</h3>
+        <p>Incorporamos inteligencia artificial para mejorar las respuestas del chatbot, clasificar intenciones y personalizar la experiencia del usuario.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CASOS DE USO -->
+<section class="section" style="background:#fafafa">
+  <div class="section-inner">
+    <span class="section-tag reveal">Casos de uso</span>
+    <h2 class="reveal">Empresas que se benefician</h2>
+    <p class="reveal">
+      Implementamos automatización de WhatsApp Business en cualquier empresa que use este canal
+      para comunicarse con sus clientes.
+    </p>
+
+    <div class="use-cases">
+      <div class="use-case reveal">
+        <div class="use-case-industry">Salud y bienestar</div>
+        <h4>Clínicas y centros de salud</h4>
+        <p>Agendamiento de citas, recordatorios automáticos y respuesta a preguntas frecuentes sobre tratamientos y disponibilidad.</p>
+      </div>
+      <div class="use-case reveal" style="transition-delay:0.1s">
+        <div class="use-case-industry">Inmobiliaria</div>
+        <h4>Agencias y brokers</h4>
+        <p>Calificación automática de leads, envío de fichas de propiedades y agendamiento de visitas directamente desde WhatsApp.</p>
+      </div>
+      <div class="use-case reveal" style="transition-delay:0.2s">
+        <div class="use-case-industry">Retail y e-commerce</div>
+        <h4>Tiendas y marcas</h4>
+        <p>Atención post-venta, seguimiento de pedidos y gestión de devoluciones sin intervención del equipo humano.</p>
+      </div>
+      <div class="use-case reveal">
+        <div class="use-case-industry">Educación</div>
+        <h4>Instituciones educativas</h4>
+        <p>Información sobre programas, inscripciones, fechas importantes y seguimiento de prospectos interesados.</p>
+      </div>
+      <div class="use-case reveal" style="transition-delay:0.1s">
+        <div class="use-case-industry">Servicios profesionales</div>
+        <h4>Consultoras y agencias</h4>
+        <p>Recepción y clasificación de solicitudes, agendamiento de reuniones y envío automático de propuestas y materiales.</p>
+      </div>
+      <div class="use-case reveal" style="transition-delay:0.2s">
+        <div class="use-case-industry">Hostelería</div>
+        <h4>Hoteles y restaurantes</h4>
+        <p>Reservas, menús, confirmaciones y atención a huéspedes en tiempo real a través de WhatsApp.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO TRABAJAMOS -->
+<section class="section">
+  <div class="section-inner">
+    <span class="section-tag reveal">Metodología</span>
+    <h2 class="reveal">Cómo implementamos tu chatbot</h2>
+    <p class="reveal">
+      Desde el diagnóstico hasta el lanzamiento en WhatsApp Business, acompañamos cada paso
+      del proceso para garantizar un sistema funcional y escalable.
+    </p>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h4>Diagnóstico</h4>
+        <p>Analizamos tus flujos de atención actuales en WhatsApp y mapeamos los casos de uso.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">02</div>
+        <h4>Diseño del flujo</h4>
+        <p>Definimos los árboles de conversación, mensajes y lógica de enrutamiento del chatbot.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">03</div>
+        <h4>Integración</h4>
+        <p>Conectamos WhatsApp Business API con tu calendario, CRM o herramientas existentes.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">04</div>
+        <h4>Lanzamiento</h4>
+        <p>Activamos, medimos resultados y ajustamos el bot según el comportamiento real de los usuarios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTOS -->
+<section class="section" style="background:#fafafa">
+  <div class="section-inner">
+    <span class="section-tag reveal">Productos</span>
+    <h2 class="reveal">Soluciones listas para activar</h2>
+    <p class="reveal">Productos diseñados para empresas que quieren comenzar rápido con automatización de atención.</p>
+
+    <div class="products">
+      <div class="product-card reveal">
+        <div class="wa-badge" style="margin-bottom:16px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          WhatsApp Automation
+        </div>
+        <h3>Perfilador de Clientes</h3>
+        <p>Captura, clasifica y califica automáticamente los leads que llegan por WhatsApp.</p>
+        <p class="product-detail">Convierte cada mensaje entrante en una oportunidad de venta identificada y priorizada.</p>
+        <a href="/perfilador">Ver producto →</a>
+      </div>
+
+      <div class="product-card reveal" style="transition-delay:0.1s">
+        <h3>Diagnóstico ICO</h3>
+        <p>Evalúa en qué estado está la atención al cliente de tu empresa y qué se puede automatizar.</p>
+        <p class="product-detail">Identifica cuellos de botella operativos y oportunidades de automatización en menos de 10 minutos.</p>
+        <a href="/diagnostico">Ver producto →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="section" id="contacto">
+  <div class="section-inner">
+    <span class="section-tag reveal">Contacto</span>
+    <h2 class="reveal">Hablemos de tu proyecto</h2>
+    <p class="reveal">
+      Somos una empresa con sede en Bogotá, Colombia. Puedes contactarnos directamente
+      por cualquiera de los siguientes canales.
+    </p>
+
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Empresa</div>
+            <div class="contact-item-value">Noema · Bogotá, Colombia</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Correo electrónico</div>
+            <div class="contact-item-value"><a href="mailto:andres.pinzon@noema.lat">andres.pinzon@noema.lat</a></div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.12 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Teléfono / WhatsApp</div>
+            <div class="contact-item-value">
+              <a href="https://wa.me/573113875323" target="_blank">
+                +57 311 387 5323
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Ubicación</div>
+            <div class="contact-item-value">Bogotá D.C., Colombia</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-box reveal" style="transition-delay:0.15s">
+        <h3>¿Quieres automatizar tu WhatsApp?</h3>
+        <p>Agenda una llamada de 30 minutos. Analizamos tu operación y te mostramos cómo podría funcionar un chatbot para tu empresa.</p>
+        <a href="mailto:andres.pinzon@noema.lat?subject=Quiero automatizar mi WhatsApp" class="btn-primary">Solicitar diagnóstico gratis</a>
+        <p style="margin-top:16px;font-size:12px;color:var(--muted)">Sin costo · Sin compromiso · Respuesta en menos de 24 horas</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <canvas class="cta-bg" id="ctaCanvas"></canvas>
+  <div class="section-inner">
+    <h2>Automatiza la atención de tu empresa hoy</h2>
+    <p>Implementamos tu chatbot en WhatsApp Business en menos de una semana.</p>
+    <a href="mailto:andres.pinzon@noema.lat?subject=Quiero automatizar mi WhatsApp" class="btn-white">Solicitar diagnóstico gratis</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">NOEMA</div>
+        <p>Automatizamos la atención al cliente y la captura de leads para empresas mediante chatbots y flujos conectados a WhatsApp Business.</p>
+      </div>
+
+      <div class="footer-contact">
+        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:4px">Contacto directo</div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:andres.pinzon@noema.lat">andres.pinzon@noema.lat</a>
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.12 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <div class="contact-item-value">
+            <a href="https://wa.me/573113875323" target="_blank">
+              +57 311 387 5323
+            </a>
+          </div>
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Bogotá D.C., Colombia</span>
+        </div>
+        <div class="footer-contact-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <a href="https://noema.lat">noema.lat</a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-links-title">Navegación</div>
+        <a href="/servicios">Servicios</a>
+        <a href="/nosotros">Nosotros</a>
+        <a href="/diagnostico">Diagnóstico ICO</a>
+        <a href="/perfilador">Perfilador de Clientes</a>
+        <a href="/contacto">Contacto</a>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-links-title">Legal</div>
+        <a href="/politica-datos">Política de privacidad</a>
+        <a href="/terminos">Términos de uso</a>
+        <a href="/politica-cookies">Política de cookies</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Noema · Bogotá, Colombia · Todos los derechos reservados</p>
+      <div class="footer-bottom-links">
+        <a href="/politica-datos">Privacidad</a>
+        <a href="/terminos">Términos</a>
+        <a href="/contacto">Contacto</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── DOT GRID CANVAS (hero) ── */
+(function(){
+  if(window.innerWidth < 768) return;
+  const canvas = document.getElementById('heroCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W,H,dots,mouse={x:-9999,y:-9999};
+  function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;buildDots()}
+  function buildDots(){
+    dots=[];const spacing=44;const cols=Math.ceil(W/spacing)+1;const rows=Math.ceil(H/spacing)+1;
+    for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){dots.push({x:c*spacing,y:r*spacing,ox:c*spacing,oy:r*spacing,vx:0,vy:0})}}
+  }
+  let lastTime=0;
+  function draw(ts){
+    requestAnimationFrame(draw);
+    if(ts-lastTime<30){return}lastTime=ts;
+    ctx.clearRect(0,0,W,H);
+    const maxDist=66;
+    for(let i=0;i<dots.length;i++){const a=dots[i];for(let j=i+1;j<dots.length;j++){const b=dots[j];const dx=a.x-b.x,dy=a.y-b.y;const d=Math.sqrt(dx*dx+dy*dy);if(d<maxDist){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(37,99,235,${0.06*(1-d/maxDist)})`;ctx.lineWidth=1;ctx.stroke()}}}
+    for(let i=0;i<dots.length;i++){
+      const d=dots[i];const mdx=d.x-mouse.x;const mdy=d.y-mouse.y;const md=Math.sqrt(mdx*mdx+mdy*mdy);const repel=90;
+      if(md<repel){const force=(1-md/repel)*1.8;d.vx+=(mdx/md)*force;d.vy+=(mdy/md)*force}
+      d.vx+=(d.ox-d.x)*0.08;d.vy+=(d.oy-d.y)*0.08;d.vx*=0.78;d.vy*=0.78;d.x+=d.vx;d.y+=d.vy;
+      const glow=md<repel?(1-md/repel):0;const r=2+glow*2;
+      ctx.beginPath();ctx.arc(d.x,d.y,r,0,Math.PI*2);ctx.fillStyle=`rgba(37,99,235,${0.18+glow*0.5})`;ctx.fill();
+    }
+  }
+  canvas.addEventListener('mousemove',e=>{const rect=canvas.getBoundingClientRect();mouse.x=e.clientX-rect.left;mouse.y=e.clientY-rect.top});
+  canvas.addEventListener('mouseleave',()=>{mouse.x=-9999;mouse.y=-9999});
+  const ro=new ResizeObserver(resize);ro.observe(canvas.parentElement);resize();requestAnimationFrame(draw);
+})();
+
+/* ── CTA CANVAS ── */
+(function(){
+  if(window.innerWidth<768)return;
+  const canvas=document.getElementById('ctaCanvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');let W,H,lines=[];
+  function resize(){W=canvas.width=canvas.offsetWidth;H=canvas.height=canvas.offsetHeight;lines=[];for(let i=0;i<12;i++){lines.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,len:60+Math.random()*120,angle:Math.random()*Math.PI*2})}}
+  function draw(){requestAnimationFrame(draw);ctx.clearRect(0,0,W,H);lines.forEach(l=>{l.x+=l.vx;l.y+=l.vy;l.angle+=0.005;if(l.x<-200)l.x=W+200;if(l.x>W+200)l.x=-200;if(l.y<-200)l.y=H+200;if(l.y>H+200)l.y=-200;ctx.beginPath();ctx.moveTo(l.x-Math.cos(l.angle)*l.len/2,l.y-Math.sin(l.angle)*l.len/2);ctx.lineTo(l.x+Math.cos(l.angle)*l.len/2,l.y+Math.sin(l.angle)*l.len/2);ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;ctx.stroke()})}
+  const ro=new ResizeObserver(resize);ro.observe(canvas.parentElement);resize();draw();
+})();
+
+/* ── SCROLL REVEAL ── */
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:0.12});
+  els.forEach(el=>obs.observe(el));
+})();
+
+/* ── COUNTER ANIMATION ── */
+(function(){
+  const nums=document.querySelectorAll('[data-count]');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const el=e.target;const target=+el.dataset.count;const suffix=el.dataset.suffix||'';let start=0;
+        const step=target/40;
+        const interval=setInterval(()=>{start+=step;if(start>=target){el.textContent=target+suffix;clearInterval(interval)}else{el.textContent=Math.floor(start)+suffix}},30);
+        obs.unobserve(el);
+      }
+    });
+  },{threshold:0.5});
+  nums.forEach(n=>obs.observe(n));
+})();
+</script>
+
+</body>
+</html>
