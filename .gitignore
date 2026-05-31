@@ -1,0 +1,32 @@
+# Node
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+
+# Build
+dist/
+build/
+
+# Secrets
+credentials.json
+service-account.json
+*.key
+*.pem
+
+# n8n
+*.sqlite
