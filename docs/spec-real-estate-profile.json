@@ -1,0 +1,510 @@
+{
+  "metadata": {
+    "id": "real-estate-profile",
+    "name": "Perfilador inmobiliario",
+    "version": "0.1.0",
+    "status": "documentation-only",
+    "description": "Especificacion espejo del perfilador inmobiliario actual. No esta conectada al runtime.",
+    "source_files": [
+      "productos/chatbot/perfilador/app.html",
+      "productos/chatbot/perfilador/admin.html",
+      "productos/chatbot/perfilador/dashboard.html",
+      "docs/contratos-perfilador.md",
+      "docs/matriz-campos-perfilador.md"
+    ],
+    "runtime_binding": false,
+    "industry": {
+      "key": "real_estate",
+      "label": "Inmobiliaria",
+      "market": "Colombia",
+      "primary_user_label": "Broker",
+      "lead_label": "Lead comprador"
+    }
+  },
+  "integrations": {
+    "n8n": {
+      "base_url": "https://n8n.noema.lat/webhook",
+      "endpoints": {
+        "get_broker_config": {
+          "method": "GET",
+          "path": "/broker-config",
+          "query": ["broker_id"]
+        },
+        "post_broker_config": {
+          "method": "POST",
+          "path": "/broker-config"
+        },
+        "post_lead": {
+          "method": "POST",
+          "path": "/process-lead"
+        },
+        "get_broker_leads": {
+          "method": "GET",
+          "path": "/broker-leads",
+          "query": ["broker_id", "token"]
+        }
+      }
+    },
+    "whatsapp": {
+      "provider": "wa.me",
+      "country_prefix_default": "57"
+    }
+  },
+  "fields": {
+    "identity": [
+      {
+        "name": "broker_id",
+        "type": "string",
+        "required": true,
+        "origin": "query.broker or admin input",
+        "description": "Identificador del broker propietario del flujo."
+      },
+      {
+        "name": "nombre",
+        "type": "string",
+        "required": true,
+        "origin": "public_form",
+        "description": "Nombre completo del lead."
+      },
+      {
+        "name": "celular",
+        "type": "string",
+        "required": true,
+        "origin": "public_form",
+        "description": "Numero de WhatsApp del lead."
+      }
+    ],
+    "real_estate_profile": [
+      { "name": "comprador", "type": "enum", "required": true, "enum": "comprador" },
+      { "name": "habitaciones", "type": "enum", "required": true, "enum": "habitaciones" },
+      { "name": "parqueadero", "type": "enum", "required": true, "enum": "parqueadero" },
+      { "name": "ascensor", "type": "enum", "required": true, "enum": "ascensor" },
+      { "name": "zona", "type": "string", "required": false, "default": "No especificada" },
+      { "name": "zona_razon", "type": "string", "required": false, "sent_to_n8n": false },
+      { "name": "zona_flex", "type": "enum", "required": true, "enum": "zona_flex" },
+      { "name": "decisores", "type": "enum", "required": true, "enum": "decisores" },
+      { "name": "presupuesto", "type": "enum", "required": true, "enum": "presupuesto" },
+      { "name": "credito", "type": "enum", "required": true, "enum": "credito" },
+      { "name": "recursos_propios", "type": "enum", "required": "conditional", "enum": "recursos_propios" },
+      { "name": "cuota", "type": "enum", "required": "conditional", "enum": "cuota" },
+      { "name": "listo", "type": "enum", "required": "for_complete_lead", "enum": "listo" },
+      { "name": "vistos", "type": "enum", "required": "for_complete_lead", "enum": "vistos" },
+      { "name": "horario", "type": "enum", "required": "for_derivar_lead", "enum": "horario" },
+      { "name": "tipo_lead", "type": "enum", "required": true, "enum": "tipo_lead" }
+    ],
+    "notes": [
+      { "name": "nota_comprador", "type": "string", "required": false },
+      { "name": "nota_habitaciones", "type": "string", "required": false },
+      { "name": "nota_ascensor", "type": "string", "required": false },
+      { "name": "nota_credito", "type": "string", "required": false },
+      { "name": "nota_anteriores", "type": "string", "required": false }
+    ],
+    "tracking": [
+      { "name": "utm_source", "type": "string", "required": false },
+      { "name": "utm_medium", "type": "string", "required": false },
+      { "name": "utm_campaign", "type": "string", "required": false },
+      { "name": "propiedad", "type": "string", "required": false }
+    ],
+    "broker_config": [
+      { "name": "activo", "type": "boolean_or_string", "values": [true, "TRUE", "FALSE"] },
+      { "name": "nombre", "type": "string", "default": "Tu Broker" },
+      { "name": "inmobiliaria", "type": "string" },
+      { "name": "logo", "type": "string", "default": "HABI" },
+      { "name": "mensaje_intro", "type": "string" },
+      { "name": "asesor", "type": "string", "default": "nuestro asesor" },
+      { "name": "whatsapp_destino", "type": "string" },
+      { "name": "ciudad", "type": "string", "default": "la ciudad" },
+      { "name": "aliado_credito", "type": "string", "default": "HabiCredit" },
+      { "name": "updated_at", "type": "string" }
+    ]
+  },
+  "enums": {
+    "comprador": [
+      { "value": "yo_familia", "label": "Para mi y mi familia" },
+      { "value": "yo_solo", "label": "Para mi solo(a)" },
+      { "value": "otra_persona", "label": "Para otra persona" },
+      { "value": "inversion", "label": "Para invertir" }
+    ],
+    "habitaciones": [
+      { "value": "1", "label": "1 habitacion" },
+      { "value": "2", "label": "2 habitaciones" },
+      { "value": "3", "label": "3 habitaciones" },
+      { "value": "4+", "label": "4 o mas habitaciones" },
+      { "value": "flexible", "label": "Flexible" }
+    ],
+    "parqueadero": [
+      { "value": "carro", "label": "Si, tengo carro" },
+      { "value": "moto", "label": "Si, tengo moto" },
+      { "value": "carro_moto", "label": "Tengo carro y moto" },
+      { "value": "no", "label": "No tengo vehiculo" }
+    ],
+    "ascensor": [
+      { "value": "cualquier", "label": "Cualquier piso esta bien" },
+      { "value": "con_ascensor", "label": "Debe tener ascensor" },
+      { "value": "piso_bajo", "label": "Sin ascensor, maximo piso 3" },
+      { "value": "piso_bajo_ascensor", "label": "Piso bajo con ascensor disponible" }
+    ],
+    "zona_flex": [
+      { "value": "si", "label": "Si, evaluaria otras zonas" },
+      { "value": "no", "label": "No, zona definitiva" }
+    ],
+    "decisores": [
+      { "value": "solo", "label": "Solo yo decido" },
+      { "value": "pareja", "label": "Mi pareja o esposo(a)" },
+      { "value": "familia", "label": "Mi familia" },
+      { "value": "varios", "label": "Somos varios" }
+    ],
+    "presupuesto": [
+      { "value": "hasta_200", "label": "Hasta $200M" },
+      { "value": "200_300", "label": "$200M - $300M" },
+      { "value": "300_500", "label": "$300M - $500M" },
+      { "value": "500_800", "label": "$500M - $800M" },
+      { "value": "mas_800", "label": "Mas de $800M" },
+      { "value": "no_definido", "label": "No definido" }
+    ],
+    "credito": [
+      { "value": "aprobado", "label": "Credito aprobado" },
+      { "value": "proceso", "label": "Credito en proceso" },
+      { "value": "solo_recursos", "label": "De contado" },
+      { "value": "mixto", "label": "Credito + recursos propios" },
+      { "value": "no", "label": "No ha iniciado credito" }
+    ],
+    "recursos_propios": [
+      { "value": "si_disponibles", "label": "Si disponibles" },
+      { "value": "parcial", "label": "Parcial" },
+      { "value": "dependen_de_algo", "label": "Dependen de algo" },
+      { "value": "no", "label": "No" },
+      { "value": "solo_contado", "label": "Solo contado", "system_assigned": true }
+    ],
+    "cuota": [
+      { "value": "disponible", "label": "Disponible hoy" },
+      { "value": "pronto", "label": "En 1-2 meses" },
+      { "value": "activo", "label": "Depende de activo o CDT" },
+      { "value": "ahorrando", "label": "Todavia ahorrando" }
+    ],
+    "horario": [
+      { "value": "manana", "label": "Manana, 8am-12pm" },
+      { "value": "tarde", "label": "Tarde, 12pm-6pm" },
+      { "value": "cualquier", "label": "Cualquier momento" }
+    ],
+    "listo": [
+      { "value": "si", "label": "Si, avanza" },
+      { "value": "quizas", "label": "Quizas" },
+      { "value": "no", "label": "Solo mirando" }
+    ],
+    "vistos": [
+      { "value": "ninguno", "label": "Ninguno" },
+      { "value": "pocos", "label": "Entre 1 y 5" },
+      { "value": "muchos", "label": "Mas de 5" }
+    ],
+    "tipo_lead": [
+      { "value": "completo", "label": "Completo" },
+      { "value": "derivar", "label": "Derivar" }
+    ],
+    "utm_source_admin": [
+      "tiktok",
+      "instagram",
+      "facebook",
+      "whatsapp",
+      "email",
+      "portal_inmobiliario",
+      "referido",
+      "google",
+      "otro"
+    ],
+    "categoria": [
+      { "value": "CALIENTE", "label": "Caliente", "color_role": "hot" },
+      { "value": "TIBIO", "label": "Tibio", "color_role": "warm" },
+      { "value": "FRIO", "label": "Frio", "color_role": "cold" },
+      { "value": "FRÍO", "label": "Frio", "color_role": "cold" },
+      { "value": "DERIVAR", "label": "Derivar", "color_role": "referral" }
+    ]
+  },
+  "steps": [
+    {
+      "id": "s2",
+      "label": "Datos de contacto",
+      "fields": ["nombre", "celular"],
+      "required": ["nombre", "celular"],
+      "next": "s3"
+    },
+    {
+      "id": "s3",
+      "label": "Intencion de compra",
+      "fields": ["comprador", "nota_comprador"],
+      "required": ["comprador"],
+      "next": "s4"
+    },
+    {
+      "id": "s4",
+      "label": "Habitaciones",
+      "fields": ["habitaciones", "nota_habitaciones"],
+      "required": ["habitaciones"],
+      "next": "s5"
+    },
+    {
+      "id": "s5",
+      "label": "Parqueadero",
+      "fields": ["parqueadero"],
+      "required": ["parqueadero"],
+      "next": "s6"
+    },
+    {
+      "id": "s6",
+      "label": "Ascensor",
+      "fields": ["ascensor", "nota_ascensor"],
+      "required": ["ascensor"],
+      "next": "s7"
+    },
+    {
+      "id": "s7",
+      "label": "Zona",
+      "fields": ["zona", "zona_razon", "zona_flex"],
+      "required": ["zona_flex"],
+      "next": "s8"
+    },
+    {
+      "id": "s8",
+      "label": "Decisores",
+      "fields": ["decisores"],
+      "required": ["decisores"],
+      "next": "s8b"
+    },
+    {
+      "id": "s8b",
+      "label": "Presupuesto",
+      "fields": ["presupuesto"],
+      "required": ["presupuesto"],
+      "next": "s9"
+    },
+    {
+      "id": "s9",
+      "label": "Credito",
+      "fields": ["credito", "nota_credito"],
+      "required": ["credito"],
+      "next": "branch:credito"
+    },
+    {
+      "id": "s9b",
+      "label": "Derivacion por credito",
+      "fields": ["horario"],
+      "required": ["horario"],
+      "submit": {
+        "tipo_lead": "derivar"
+      }
+    },
+    {
+      "id": "s9c",
+      "label": "Recursos propios",
+      "fields": ["recursos_propios"],
+      "required": ["recursos_propios"],
+      "next": "s10"
+    },
+    {
+      "id": "s10",
+      "label": "Cuota inicial",
+      "fields": ["cuota"],
+      "required": ["cuota"],
+      "next": "branch:cuota"
+    },
+    {
+      "id": "s10b",
+      "label": "Derivacion por cuota",
+      "fields": ["horario"],
+      "required": ["horario"],
+      "submit": {
+        "tipo_lead": "derivar"
+      }
+    },
+    {
+      "id": "s11",
+      "label": "Cierre",
+      "fields": ["listo", "vistos", "nota_anteriores"],
+      "required": ["listo", "vistos"],
+      "submit": {
+        "tipo_lead": "completo"
+      }
+    },
+    {
+      "id": "s_final",
+      "label": "Confirmacion",
+      "terminal": true
+    }
+  ],
+  "branches": [
+    {
+      "id": "credito_no",
+      "when": { "field": "credito", "equals": "no" },
+      "go_to": "s9b",
+      "submit_type_if_sent": "derivar"
+    },
+    {
+      "id": "credito_solo_recursos",
+      "when": { "field": "credito", "equals": "solo_recursos" },
+      "set": { "recursos_propios": "solo_contado" },
+      "go_to": "s10"
+    },
+    {
+      "id": "credito_con_financiacion",
+      "when": { "field": "credito", "in": ["aprobado", "proceso", "mixto"] },
+      "go_to": "s9c"
+    },
+    {
+      "id": "cuota_ahorrando",
+      "when": { "field": "cuota", "equals": "ahorrando" },
+      "go_to": "s10b",
+      "submit_type_if_sent": "derivar"
+    },
+    {
+      "id": "cuota_lista_o_pronta",
+      "when": { "field": "cuota", "in": ["disponible", "pronto", "activo"] },
+      "go_to": "s11"
+    }
+  ],
+  "payload_to_n8n": {
+    "endpoint": "post_lead",
+    "method": "POST",
+    "content_type": "application/json",
+    "fields": [
+      "broker_id",
+      "nombre",
+      "celular",
+      "comprador",
+      "habitaciones",
+      "parqueadero",
+      "ascensor",
+      "zona",
+      "zona_flex",
+      "decisores",
+      "presupuesto",
+      "credito",
+      "recursos_propios",
+      "cuota",
+      "listo",
+      "vistos",
+      "horario",
+      "nota_comprador",
+      "nota_habitaciones",
+      "nota_ascensor",
+      "nota_credito",
+      "nota_anteriores",
+      "tipo_lead",
+      "utm_source",
+      "utm_medium",
+      "utm_campaign",
+      "propiedad"
+    ],
+    "not_sent_currently": [
+      "zona_razon"
+    ],
+    "success_response": {
+      "ok": true,
+      "asesor": "string"
+    },
+    "duplicate_response": {
+      "ok": true,
+      "duplicate": true,
+      "asesor": "string",
+      "message": "string"
+    },
+    "error_response": {
+      "ok": false,
+      "error": "string"
+    }
+  },
+  "dashboard_expected_fields": {
+    "identity": [
+      "lead_id",
+      "timestamp",
+      "estado",
+      "tipo_lead",
+      "nombre",
+      "celular"
+    ],
+    "classification": [
+      "categoria",
+      "score",
+      "accion_recomendada"
+    ],
+    "real_estate_profile": [
+      "comprador",
+      "habitaciones",
+      "parqueadero",
+      "ascensor",
+      "presupuesto",
+      "zona",
+      "zona_flex"
+    ],
+    "financial_profile": [
+      "credito",
+      "nota_credito",
+      "cuota",
+      "recursos_propios",
+      "decisores",
+      "listo",
+      "vistos",
+      "horario"
+    ],
+    "notes": [
+      "nota_comprador",
+      "nota_habitaciones",
+      "nota_ascensor",
+      "nota_anteriores",
+      "nota_credito"
+    ],
+    "tracking": [
+      "utm_source",
+      "utm_medium",
+      "utm_campaign"
+    ]
+  },
+  "categories_and_expected_actions": {
+    "source_of_truth": "n8n_or_external_storage",
+    "categories": [
+      {
+        "value": "CALIENTE",
+        "meaning": "Lead listo para avanzar",
+        "dashboard_guidance": "Llamar hoy, validar disponibilidad y proponer opciones."
+      },
+      {
+        "value": "TIBIO",
+        "meaning": "Lead interesado con friccion",
+        "dashboard_guidance": "Contactar en el dia e identificar bloqueo."
+      },
+      {
+        "value": "FRIO",
+        "aliases": ["FRÍO"],
+        "meaning": "Lead no listo todavia",
+        "dashboard_guidance": "Nutrir y hacer seguimiento posterior."
+      },
+      {
+        "value": "DERIVAR",
+        "meaning": "Lead que debe ir a aliado o flujo alterno",
+        "dashboard_guidance": "Derivar segun regla financiera o comercial."
+      }
+    ],
+    "action_format": {
+      "field": "accion_recomendada",
+      "type": "string",
+      "separator": "|",
+      "example": "Llamar hoy|Validar credito|Proponer 2-3 opciones"
+    },
+    "score_format": {
+      "field": "score",
+      "type": "number_or_numeric_string",
+      "range_expected": "0-100",
+      "dashboard_thresholds": {
+        "hot": ">= 70",
+        "warm": ">= 40 and < 70",
+        "cold": "< 40"
+      }
+    }
+  },
+  "known_risks": [
+    "Esta especificacion es documentation-only y puede divergir si cambia el HTML o n8n.",
+    "El scoring real no esta en el repositorio.",
+    "Los campos score, categoria y accion_recomendada dependen de n8n u otra capa externa.",
+    "El token del dashboard viaja actualmente por query string.",
+    "Los UTMs del perfilador no persisten en sessionStorage/localStorage."
+  ]
+}
