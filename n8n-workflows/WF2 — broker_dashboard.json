@@ -1,0 +1,226 @@
+{
+  "name": "WF2 — broker_dashboard",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "broker-leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -992,
+        -208
+      ],
+      "id": "dbcc5c25-2114-4fb2-87c7-d03ecccdfd90",
+      "name": "Webhook",
+      "webhookId": "f3b21759-e2ae-41d1-b46d-cc086fcd4bab"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "brokers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -784,
+        -208
+      ],
+      "id": "b71fff62-610c-4cb1-812e-df1b343765df",
+      "name": "Sheets — Leer brokers",
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        64,
+        -16
+      ],
+      "id": "cf79a31e-01e0-44a0-8ac6-fe038c8f5d43",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        -208
+      ],
+      "id": "0838b869-0a20-46b8-abaa-e77f08a44f13",
+      "name": "Leer leads",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $(\"Webhook\").first().json.query;\n\nconst broker_id = query.broker_id;\nconst token = query.token;\n\nconst brokers = $items(\"Sheets — Leer brokers\");\n\nconst broker = brokers.find(b => \n  b.json.broker_id === broker_id &&\n  String(b.json.token_admin) === String(token)\n);\n\nif (!broker) {\n  throw new Error(\"No autorizado\");\n}\n\nreturn [\n  {\n    json: {\n      broker_id\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        -208
+      ],
+      "id": "4f764fbf-e967-4925-8d5f-152f5fc839ae",
+      "name": "Validar acceso"
+    },
+    {
+      "parameters": {
+        "jsCode": "const broker_id = $(\"Validar acceso\").first().json.broker_id;\n\nconst leads = $input.all();\n\nconst filtrados = leads\n  .filter(item => item.json.broker_id === broker_id)\n  .sort((a, b) => Number(b.json.row_number || 0) - Number(a.json.row_number || 0))\n  .slice(0, 10);\n\nreturn filtrados.map(item => ({\n  json: item.json\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -208
+      ],
+      "id": "d06d9802-ae15-4229-a0c6-80353e116c1e",
+      "name": "Filtrar leads del broker",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const leads = $input.all();\n\n// Si no hay leads reales, responder vacío\nif (!leads.length || !leads[0].json.lead_id) {\n  return [{ json: { data: [] } }];\n}\n\nconst limpio = leads.map(item => {\n  const l = item.json;\n\n  return {\n    id: l.lead_id || '',\n    lead_id: l.lead_id || '',\n    fecha: l.timestamp || '',\n    timestamp: l.timestamp || '',\n\n    broker_id: l.broker_id || '',\n    nombre: l.nombre || '',\n    celular: l.celular || '',\n\n    score: l.score || '',\n    categoria: l.categoria || '',\n    accion: l.accion_recomendada || '',\n    accion_recomendada: l.accion_recomendada || '',\n\n    comprador: l.comprador || '',\n    habitaciones: l.habitaciones || '',\n    parqueadero: l.parqueadero || '',\n    ascensor: l.ascensor || '',\n    zona: l.zona || '',\n    zona_flex: l.zona_flex || '',\n    presupuesto: l.presupuesto || '',\n    propiedad: l.propiedad || '',\n\n    decisores: l.decisores || '',\n    credito: l.credito || '',\n    recursos_propios: l.recursos_propios || '',\n    cuota: l.cuota || '',\n    listo: l.listo || '',\n    vistos: l.vistos || '',\n    horario: l.horario || '',\n\n    nota_comprador: l.nota_comprador || '',\n    nota_habitaciones: l.nota_habitaciones || '',\n    nota_ascensor: l.nota_ascensor || '',\n    nota_credito: l.nota_credito || '',\n    nota_anteriores: l.nota_anteriores || '',\n\n    estado: l.estado || 'nuevo',\n    tipificacion: l.tipificacion || '',\n    nota_gestion: l.nota_gestion || '',\n    updated_at: l.updated_at || '',\n    ultima_actividad_at: l.ultima_actividad_at || l.updated_at || l.timestamp || '',\n\n    utm_source: l.utm_source || '',\n    utm_medium: l.utm_medium || '',\n    utm_campaign: l.utm_campaign || '',\n    tipo_lead: l.tipo_lead || '',\n    whatsapp_enviado: l.whatsapp_enviado || ''\n  };\n});\n\nreturn [{ json: { data: limpio } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -208
+      ],
+      "id": "aa48eaa0-0979-4971-9297-34253641e382",
+      "name": "Formatear Respuesta"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer brokers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer brokers": {
+      "main": [
+        [
+          {
+            "node": "Validar acceso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar acceso": {
+      "main": [
+        [
+          {
+            "node": "Leer leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer leads": {
+      "main": [
+        [
+          {
+            "node": "Filtrar leads del broker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar leads del broker": {
+      "main": [
+        [
+          {
+            "node": "Formatear Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Respuesta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "6b3c9f9b-024e-4982-b0be-a089fc20505b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdfebaf6ca5b8fa954116d746e5fc3d8a71a33fb84913eb74fc5879bfdc23df5"
+  },
+  "id": "mIpCkVhhGADQ5sWO",
+  "tags": []
+}

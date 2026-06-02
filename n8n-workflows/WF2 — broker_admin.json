@@ -1,0 +1,487 @@
+{
+  "name": "WF2 — broker_admin",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "broker-config",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "5f86e2d2-2531-4a13-a90a-a2fa8878f64c",
+      "name": "Webhook GET — Leer Config",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        112
+      ],
+      "webhookId": "broker-config-get"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "broker-config",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "5bf93032-fb4a-4ab7-a0ae-95e75b393b27",
+      "name": "Webhook POST — Guardar Config",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        528
+      ],
+      "webhookId": "broker-config-post"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "brokers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "broker_id",
+              "lookupValue": "={{ $json.query.broker_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4b181151-68ab-4482-8910-26bb51b1d212",
+      "name": "Sheets — Leer Config (GET)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -272,
+        160
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── GET: nunca devolver token_admin al frontend ──\nconst row = $input.first().json;\n\nif (!row || !row.broker_id) {\n  throw new Error('BROKER_NOT_FOUND');\n}\n\n// Campos seguros — token_admin excluido intencionalmente\nreturn {\n  broker_id:     row.broker_id,\n  activo:        row.activo,\n  nombre:        row.nombre,\n  inmobiliaria:  row.inmobiliaria,\n  logo:          row.logo,\n  asesor:        row.asesor,\n  whatsapp_destino: row.whatsapp_destino,\n  mensaje_intro: row.mensaje_intro,\n  created_at:    row.created_at,\n  updated_at:    row.updated_at\n  // token_admin: NUNCA se devuelve\n};"
+      },
+      "id": "60126af4-812b-41f3-9fe0-a68b9a50d192",
+      "name": "Function — Filtrar Campos Seguros",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "af963469-0667-47d6-be30-3bcded7b5fb3",
+      "name": "Respond — Config Segura",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        272,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": false, \"error\": \"BROKER_NOT_FOUND\" }",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "id": "5abb0679-c036-436e-b683-339ec1219247",
+      "name": "Respond — No Encontrado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        320,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "brokers",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "broker_id",
+              "lookupValue": "={{ $json.body.broker_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c942252-21f9-49c4-b5e3-eef2154d9bbc",
+      "name": "Sheets — Leer para Validar Token",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -416,
+        592
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── POST: validar token en n8n, no en el navegador ──\nconst body = $('Webhook POST — Guardar Config').first().json.body;\nconst row  = $input.first().json;\n\nif (!row || !row.broker_id) {\n  throw new Error('BROKER_NOT_FOUND');\n}\n\n// Comparación real contra el token guardado en Sheets\nif (!body.token_admin || String(body.token_admin).trim() !== String(row.token_admin).trim()) {\n  throw new Error('TOKEN_INVALID');\n}\n\nconst now = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });\n\nreturn {\n  broker_id:       row.broker_id,   // nunca se cambia el ID\n  activo:          body.activo          ?? row.activo,\n  nombre:          body.nombre          ?? row.nombre,\n  inmobiliaria:    body.inmobiliaria    ?? row.inmobiliaria,\n  logo:            body.logo            ?? row.logo,\n  asesor:          body.asesor          ?? row.asesor,\n  whatsapp_destino:body.whatsapp_destino?? row.whatsapp_destino,\n  mensaje_intro:   body.mensaje_intro   ?? row.mensaje_intro,\n  token_admin:     row.token_admin,  // token no se modifica desde el admin\n  updated_at:      now\n};"
+      },
+      "id": "59df8b6c-c1d5-48c6-8bc8-6466c4128ac7",
+      "name": "Function — Validar Token en n8n",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "brokers",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "broker_id": "={{ $json.broker_id }}",
+            "activo": "={{ $json.activo }}",
+            "nombre": "={{ $json.nombre }}",
+            "inmobiliaria": "={{ $json.inmobiliaria }}",
+            "logo": "={{ $json.logo }}",
+            "asesor": "={{ $json.asesor }}",
+            "whatsapp_destino": "={{ $json.whatsapp_destino }}",
+            "mensaje_intro": "={{ $json.mensaje_intro }}",
+            "updated_at": "={{ $json.updated_at }}",
+            "created_at": "="
+          },
+          "matchingColumns": [
+            "broker_id"
+          ],
+          "schema": [
+            {
+              "id": "broker_id",
+              "displayName": "broker_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inmobiliaria",
+              "displayName": "inmobiliaria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "logo",
+              "displayName": "logo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "asesor",
+              "displayName": "asesor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp_destino",
+              "displayName": "whatsapp_destino",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "token_admin",
+              "displayName": "token_admin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensaje_intro",
+              "displayName": "mensaje_intro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "017053e7-efc8-49b2-90f6-66949778d68e",
+      "name": "Sheets — Actualizar Broker",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        48,
+        400
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true, \"mensaje\": \"Configuraci\\u00f3n guardada correctamente\" }",
+        "options": {}
+      },
+      "id": "9c7cd3c0-ae3b-46e2-8b6a-44e8a0a5b9e0",
+      "name": "Respond — Guardado OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        336,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: $json.message }) }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "2ea90d7c-d2f6-412e-b7fd-3007cd916ef1",
+      "name": "Respond — Token Inválido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        96,
+        672
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook GET — Leer Config": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer Config (GET)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer Config (GET)": {
+      "main": [
+        [
+          {
+            "node": "Function — Filtrar Campos Seguros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function — Filtrar Campos Seguros": {
+      "main": [
+        [
+          {
+            "node": "Respond — Config Segura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook POST — Guardar Config": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer para Validar Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer para Validar Token": {
+      "main": [
+        [
+          {
+            "node": "Function — Validar Token en n8n",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond — Token Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function — Validar Token en n8n": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Actualizar Broker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond — Token Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Actualizar Broker": {
+      "main": [
+        [
+          {
+            "node": "Respond — Guardado OK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond — Token Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "103849d9-2bb3-4e2f-8fd5-ad36a47eb43b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdfebaf6ca5b8fa954116d746e5fc3d8a71a33fb84913eb74fc5879bfdc23df5"
+  },
+  "id": "MjUSuoikWudVQd60",
+  "tags": []
+}

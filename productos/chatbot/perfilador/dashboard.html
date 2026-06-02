@@ -197,6 +197,22 @@ html,body{min-height:100vh;background:#F1F4FB;font-family:'Plus Jakarta Sans',sy
 .utm-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F3F4F6;color:var(--text-2)}
 .utm-pill.has-val{background:var(--brand-light);color:var(--brand)}
 
+/* Gestion comercial */
+.gestion-box{background:#F8FAFC;border:1px solid var(--border);border-radius:var(--radius-xs);padding:14px;margin-top:12px}
+.gestion-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.gestion-field{display:flex;flex-direction:column;gap:5px}
+.gestion-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-2)}
+.gestion-input{width:100%;border:1px solid var(--border);border-radius:var(--radius-xs);background:var(--white);color:var(--text);font-family:inherit;font-size:12px;padding:8px 10px}
+.gestion-input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,216,0.08)}
+.gestion-note{min-height:68px;resize:vertical;line-height:1.5}
+.gestion-actions{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:10px}
+.gestion-save{font-size:12px;font-weight:700;color:#fff;background:var(--brand);border:none;border-radius:var(--radius-xs);padding:8px 13px;cursor:pointer;transition:background 0.15s}
+.gestion-save:hover{background:var(--brand-dark)}
+.gestion-save:disabled{background:#9CA3AF;cursor:not-allowed}
+.gestion-feedback{font-size:12px;font-weight:600;color:var(--text-2)}
+.gestion-feedback.success{color:var(--success)}
+.gestion-feedback.error{color:var(--hot)}
+
 /* NUEVO indicator strip */
 .nuevo-strip{background:linear-gradient(90deg,var(--brand) 0%,var(--brand-mid) 100%);height:3px;width:100%}
 
@@ -259,6 +275,10 @@ html,body{min-height:100vh;background:#F1F4FB;font-family:'Plus Jakarta Sans',sy
   }
 
   .lead-detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .gestion-grid{
     grid-template-columns:1fr;
   }
 
@@ -379,10 +399,35 @@ const params    = new URLSearchParams(window.location.search);
 const broker_id = params.get('broker_id');
 const token     = params.get('token');
 const WH_URL    = `https://n8n.noema.lat/webhook/broker-leads?broker_id=${broker_id}&token=${token}`;
+const LEAD_ACTION_URL = 'https://n8n.noema.lat/webhook/lead-action';
 
 // ── ESTADO ──
 let allLeads    = [];
 let activeFilter = 'todos';
+
+const ESTADOS_CRM = [
+  ['nuevo','Nuevo'],
+  ['contactado','Contactado'],
+  ['calificado','Calificado'],
+  ['visita_agendada','Visita agendada'],
+  ['en_seguimiento','En seguimiento'],
+  ['descartado','Descartado'],
+  ['convertido','Convertido']
+];
+
+const TIPIFICACIONES_CRM = [
+  ['','Sin tipificacion'],
+  ['listo_para_visita','Listo para visita'],
+  ['credito_pendiente','Credito pendiente'],
+  ['sin_cuota_inicial','Sin cuota inicial'],
+  ['presupuesto_bajo','Presupuesto bajo'],
+  ['zona_no_disponible','Zona no disponible'],
+  ['solo_curioso','Solo curioso'],
+  ['no_responde','No responde'],
+  ['datos_incompletos','Datos incompletos'],
+  ['duplicado','Duplicado'],
+  ['referido_aliado','Referido a aliado']
+];
 
 // ── INIT ──
 if (!broker_id || !token) {
@@ -525,6 +570,11 @@ function buildCard(lead, isNuevo) {
     '500_800':'$500M – $800M','mas_800':'Más de $800M','no_definido':'No definido'
   };
   const presupuesto = presMap[lead.presupuesto] || lead.presupuesto || '-';
+  const estadoGestion = lead.estado || 'nuevo';
+  const tipificacionGestion = lead.tipificacion || '';
+  const notaGestion = lead.nota_gestion || '';
+  const feedbackType = lead._managementFeedbackType || '';
+  const feedbackText = lead._managementFeedback || '';
 
   const card = document.createElement('div');
   card.className = 'lead-card' + (isNuevo ? ' nuevo-card' : '');
@@ -657,6 +707,33 @@ function buildCard(lead, isNuevo) {
         </div>
       </div>` : ''}
 
+      <!-- Gestion comercial -->
+      <div class="gestion-box" data-lead-id="${escHtml(lead.lead_id || '')}">
+        <div class="section-title">Gestion comercial</div>
+        <div class="gestion-grid">
+          <label class="gestion-field">
+            <span class="gestion-label">Estado</span>
+            <select class="gestion-input" data-field="estado">
+              ${renderSelectOptions(ESTADOS_CRM, estadoGestion)}
+            </select>
+          </label>
+          <label class="gestion-field">
+            <span class="gestion-label">Tipificacion</span>
+            <select class="gestion-input" data-field="tipificacion">
+              ${renderSelectOptions(TIPIFICACIONES_CRM, tipificacionGestion)}
+            </select>
+          </label>
+        </div>
+        <label class="gestion-field">
+          <span class="gestion-label">Nota de gestion</span>
+          <textarea class="gestion-input gestion-note" data-field="nota_gestion" maxlength="500" placeholder="Ej: Cliente pidio llamada manana en la tarde.">${escHtml(notaGestion)}</textarea>
+        </label>
+        <div class="gestion-actions">
+          <span class="gestion-feedback ${feedbackType}">${escHtml(feedbackText)}</span>
+          <button class="gestion-save" onclick="saveLeadManagement(this)">Guardar gestion</button>
+        </div>
+      </div>
+
       <!-- Tracking -->
       <div style="margin-top:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:11px;font-weight:600;color:var(--text-2)">📡 Tracking:</span>
@@ -680,6 +757,82 @@ function buildCard(lead, isNuevo) {
 }
 
 // ── TOGGLE EXPAND ──
+function renderSelectOptions(options, selected) {
+  return options.map(([value,label]) =>
+    `<option value="${escHtml(value)}"${value === selected ? ' selected' : ''}>${escHtml(label)}</option>`
+  ).join('');
+}
+
+function labelFor(options, value) {
+  const found = options.find(([v]) => v === value);
+  return found ? found[1] : (value || '--');
+}
+
+async function saveLeadManagement(btn) {
+  const box = btn.closest('.gestion-box');
+  const feedback = box.querySelector('.gestion-feedback');
+  const leadId = box.dataset.leadId;
+  const lead = allLeads.find(l => String(l.lead_id || '') === String(leadId || ''));
+
+  if (!lead) {
+    feedback.textContent = 'No encontramos este lead.';
+    feedback.className = 'gestion-feedback error';
+    return;
+  }
+
+  const estado = box.querySelector('[data-field="estado"]').value;
+  const tipificacion = box.querySelector('[data-field="tipificacion"]').value;
+  const nota_gestion = box.querySelector('[data-field="nota_gestion"]').value.trim();
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  feedback.textContent = '';
+  feedback.className = 'gestion-feedback';
+
+  try {
+    const res = await fetch(LEAD_ACTION_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
+      body: JSON.stringify({
+        broker_id,
+        token,
+        lead_id: leadId,
+        action: 'update_management',
+        estado,
+        tipificacion,
+        nota_gestion
+      })
+    });
+
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'ERROR');
+
+    Object.assign(lead, {
+      estado: data.estado || estado,
+      tipificacion: data.tipificacion || tipificacion,
+      nota_gestion: data.nota_gestion ?? nota_gestion,
+      updated_at: data.updated_at || lead.updated_at || '',
+      ultima_actividad_at: data.ultima_actividad_at || lead.ultima_actividad_at || '',
+      _managementFeedback: 'Gestion guardada',
+      _managementFeedbackType: 'success'
+    });
+
+    feedback.textContent = 'Gestion guardada';
+    feedback.className = 'gestion-feedback success';
+  } catch(e) {
+    feedback.textContent = 'No se pudo guardar. Intenta de nuevo.';
+    feedback.className = 'gestion-feedback error';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar gestion';
+  }
+}
+
 function toggleCard(card) {
   const isOpen = card.classList.contains('expanded');
   // Cerrar todos

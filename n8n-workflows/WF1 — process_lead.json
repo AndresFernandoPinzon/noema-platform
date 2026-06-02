@@ -1,0 +1,1314 @@
+{
+  "name": "WF1 — process_lead",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook — Recibir Lead').first().json.body;\n\nfunction normalizarCelular(raw) {\n  let d = (raw || '').toString().replace(/\\D/g, '');\n  // Quitar prefijo 57 si viene con código de país (ej: 573001234567)\n  if (d.length >= 11 && d.startsWith('57')) d = d.slice(2);\n  return d.slice(-10);\n}\n\nreturn [{\n  json: {\n    celular_normalizado: normalizarCelular(body.celular),\n    broker_id: body.broker_id\n  }\n}];\n"
+      },
+      "id": "edfcb953-0c62-4a0d-8da3-4a54ac22b626",
+      "name": "Code — Normalizar Celular",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2640,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "celular",
+              "lookupValue": "={{ $json.celular_normalizado }}"
+            },
+            {
+              "lookupColumn": "broker_id",
+              "lookupValue": "={{ $json.broker_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "846fc385-b82a-43aa-a600-0cb19167ad99",
+      "name": "Sheets — Buscar Duplicado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2480,
+        16
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const duplicados = $('Sheets — Buscar Duplicado').all();\n\nconst existingLead = duplicados\n  .map(item => item.json)\n  .find(row => row.lead_id && String(row.lead_id).startsWith('L-'));\n\nreturn [{\n  json: {\n    es_duplicado: !!existingLead,\n    lead_id_existente: existingLead?.lead_id || null,\n    nombre_existente: existingLead?.nombre || null,\n    score_existente: existingLead?.score || null,\n    categoria_existente: existingLead?.categoria || null\n  }\n}];\n"
+      },
+      "id": "e8403b2b-a7d6-4410-8001-a0fd9c96167b",
+      "name": "Code — Evaluar Duplicado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2320,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "dup-boolean-check",
+              "leftValue": "={{ $json.es_duplicado }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d63f31e7-12f6-4f9f-8a6a-c42a4f26da44",
+      "name": "If — Es Duplicado",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2160,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({\n  ok: true,\n  duplicate: true,\n  lead_id: $json.lead_id_existente,\n  nombre: $json.nombre_existente,\n  score: $json.score_existente,\n  categoria: $json.categoria_existente,\n  message: 'Este n\\u00famero ya fue registrado. El asesor se pondr\\u00e1 en contacto pronto.'\n}) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "61eaf8c6-19e7-4b23-860a-0536de08f04c",
+      "name": "Respond — Lead Duplicado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1968,
+        -192
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "brokers",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "broker_id",
+              "lookupValue": "={{ $json.body.broker_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e0c9f37-9826-4b6a-92d1-ab89804cd71f",
+      "name": "Sheets — Leer Config Broker1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -2992,
+        128
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const broker = $('Sheets — Leer Config Broker1').first().json;\n// ── NORMALIZAR CELULAR ──\nfunction normalizarCelular(raw) {\n  let d = (raw || '').toString().replace(/\\D/g, '');\n  if (d.length >= 11 && d.startsWith('57')) d = d.slice(2);\n  return d.slice(-10);\n}\nconst body = $('Webhook — Recibir Lead').first().json.body;\nconst credito = (body.credito || '').toString().trim().toLowerCase();\n\nconst cuota = (body.cuota || '').toString().trim().toLowerCase();\nconst listo = (body.listo || '').toString().trim().toLowerCase();\nconst decisores = (body.decisores || '').toString().trim().toLowerCase();\nconst vistos = (body.vistos || '').toString().trim().toLowerCase();\n\n// ── PESOS FIJOS (v1) — mover a Sheets en v2 ──\nconst PESOS = {\n  credito: { aprobado: 30, solo_recursos: 30, mixto: 26, proceso: 18,no: 0 },\n  cuota:     { disponible: 25, pronto: 12, activo: 8, ahorrando: 0 },\n  listo:     { si: 20, quizas: 10, no: 0 },\n  decisores: { solo: 10, pareja: 7, familia: 7, varios: 5 },\n  vistos:    { ninguno: 5, pocos: 10, muchos: 3 }\n};\n\n// ── CALCULAR SCORE ──\nlet score = 0;\nscore += PESOS.credito[credito] ?? 0;\nscore += PESOS.cuota[cuota] ?? 0;\nscore += PESOS.listo[listo] ?? 0;\nscore += PESOS.decisores[decisores] ?? 0;\nscore += PESOS.vistos[vistos] ?? 0;\n\n// ── CLASIFICAR ──\nlet categoria, accion, emoji;\nif (score >= 70) {\n  categoria = 'CALIENTE'; emoji = '🔴';\n  accion = '👉 Contactar hoy\\n👉 Validar disponibilidad para visita\\n👉 Proponer 2-3 opciones concretas';\n} else if (score >= 40) {\n  categoria = 'TIBIO'; emoji = '🟡';\n  accion = '👉 Contactar en el día\\n👉 Identificar bloqueo principal\\n👉 Orientar siguientes pasos';\n} else {\n  categoria = 'FRÍO'; emoji = '🔵';\n  accion = '👉 Derivar a HabiCrédito\\n👉 Seguimiento en 2-4 semanas\\n👉 Nutrir con contenido de valor';\n}\n\nconst lead_id = 'L-' + Date.now();\nconst timestamp = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });\n\n\n// ── FICHA WHATSAPP ──\nconst wa_msg =\n`${emoji} LEAD ${categoria} — ${score}/100\n\n👤 ${body.nombre}\n📱 https://wa.me/57${normalizarCelular(body.celular)}\n\n━━━━━━━━━━━━━━\n🏠 PERFIL\nBusca para: ${body.comprador || '-'}\n${body.habitaciones || '-'} hab | 🚗 ${body.parqueadero || '-'} | 🏢 ${body.ascensor || '-'}\n\n📍 Zona: ${body.zona || '-'}\n${body.zona_flex === 'si' ? 'Abierto a otras zonas' : 'Prefiere zona específica'}\n\nPresupuesto: ${body.presupuesto ? body.presupuesto.replace('_',' - ') + ' millones' : '-'}\nPropiedad origen: ${body.propiedad || '-'}\n\n━━━━━━━━━━━━━━\n💰 FINANCIERO\nCrédito: ${body.credito || '-'}\nCuota: ${body.cuota || '-'}\nBanco/detalle: ${body.nota_credito || '-'}\n\n━━━━━━━━━━━━━━\n🧠 DECISIÓN\nDecisores: ${body.decisores || '-'}\nIntención: ${\n  body.listo === 'si' ? 'Listo para comprar' :\n  body.listo === 'quizas' ? 'Evaluando opciones' :\n  'Solo explorando'\n}\nVistos: ${body.vistos || '-'}\nHorario: ${body.horario || '-'}\n\n━━━━━━━━━━━━━━\n📝 CONTEXTO REAL\n${[\n  body.nota_comprador,\n  body.nota_habitaciones,\n  body.nota_ascensor,\n  body.nota_anteriores\n].filter(Boolean).join('\\n') || 'Sin detalles adicionales'}\n\n━━━━━━━━━━━━━━\n📣 TRACKING\nOrigen: ${body.utm_source || '-'}\nMedio: ${body.utm_medium || '-'}\nCampaña: ${body.utm_campaign || '-'}\n\n━━━━━━━━━━━━━━\n🔥 ACCIÓN\n${accion}`;\n\nreturn {\n  // Para Sheets\n  timestamp,\n  lead_id,\n\n  broker_id: body.broker_id,\n  nombre: body.nombre,\n  celular: normalizarCelular(body.celular),\n\n  score,\n  categoria,\n  accion_recomendada: accion.replace(/👉 /g, '').replace(/\\n/g, ' | '),\n\n  comprador: body.comprador || '',\n  habitaciones: body.habitaciones || '',\n  parqueadero: body.parqueadero || '',\n  ascensor: body.ascensor || '',\n  zona: body.zona || '',\n  zona_flex: body.zona_flex || '',\n  presupuesto: body.presupuesto || '',\n  propiedad: body.propiedad || '',\n\n  decisores: body.decisores || '',\n  credito: body.credito || '',\n  recursos_propios: body.recursos_propios || '',\n  cuota: body.cuota || '',\n  listo: body.listo || '',\n  vistos: body.vistos || '',\n  horario: body.horario || '',\n\n  nota_comprador: body.nota_comprador || '',\n  nota_habitaciones: body.nota_habitaciones || '',\n  nota_ascensor: body.nota_ascensor || '',\n  nota_credito: body.nota_credito || '',\n  nota_anteriores: body.nota_anteriores || '',\n\n  estado: 'nuevo',\n\n  utm_source: body.utm_source || '',\n  utm_medium: body.utm_medium || '',\n  utm_campaign: body.utm_campaign || '',\n\n  tipo_lead: body.tipo_lead || '',\n  whatsapp_enviado: 'FALSE',\n\n  // Para WhatsApp y respuesta\n  wa_msg,\n  whatsapp_destino: broker.whatsapp_destino,\n  asesor: broker.asesor,\n  dashboard_url: `https://noema.lat/perfilador/dashboard?broker_id=${body.broker_id}&token=${broker.token_admin}`,\n  token_admin: broker.token_admin\n};"
+      },
+      "id": "86065d16-baf4-4016-93c4-d36b13e47843",
+      "name": "Function — Calcular Score y Armar Ficha1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1952,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "lead_id": "={{ $json.lead_id }}",
+            "broker_id": "={{ $json.broker_id }}",
+            "nombre": "={{ $json.nombre }}",
+            "celular": "={{ $json.celular }}",
+            "score": "={{ $json.score }}",
+            "categoria": "={{ $json.categoria }}",
+            "accion_recomendada": "={{ $json.accion_recomendada }}",
+            "comprador": "={{ $json.comprador }}",
+            "habitaciones": "={{ $json.habitaciones }}",
+            "parqueadero": "={{ $json.parqueadero }}",
+            "ascensor": "={{ $json.ascensor }}",
+            "zona": "={{ $json.zona }}",
+            "zona_flex": "={{ $json.zona_flex }}",
+            "decisores": "={{ $json.decisores }}",
+            "credito": "={{ $json.credito }}",
+            "cuota": "={{ $json.cuota }}",
+            "listo": "={{ $json.listo }}",
+            "vistos": "={{ $json.vistos }}",
+            "nota_comprador": "={{ $json.nota_comprador }}",
+            "nota_habitaciones": "={{ $json.nota_habitaciones }}",
+            "nota_ascensor": "={{ $json.nota_ascensor }}",
+            "nota_credito": "={{ $json.nota_credito }}",
+            "nota_anteriores": "={{ $json.nota_anteriores }}",
+            "estado": "={{ $json.estado }}",
+            "whatsapp_enviado": "={{ $json.whatsapp_enviado }}",
+            "horario": "={{ $json.horario }}",
+            "presupuesto": "={{ $json.presupuesto }}",
+            "propiedad": "={{ $json.propiedad }}",
+            "utm_source": "={{ $json.utm_source }}",
+            "utm_medium": "={{ $json.utm_medium }}",
+            "utm_campaign": "={{ $json.utm_campaign }}",
+            "tipo_lead": "={{$json.tipo_lead}}",
+            "recursos_propios": "={{$json.recursos_propios}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "broker_id",
+              "displayName": "broker_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "accion_recomendada",
+              "displayName": "accion_recomendada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comprador",
+              "displayName": "comprador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "habitaciones",
+              "displayName": "habitaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "parqueadero",
+              "displayName": "parqueadero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ascensor",
+              "displayName": "ascensor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zona",
+              "displayName": "zona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zona_flex",
+              "displayName": "zona_flex",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "presupuesto",
+              "displayName": "presupuesto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "propiedad",
+              "displayName": "propiedad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "decisores",
+              "displayName": "decisores",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "credito",
+              "displayName": "credito",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cuota",
+              "displayName": "cuota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "listo",
+              "displayName": "listo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vistos",
+              "displayName": "vistos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "horario",
+              "displayName": "horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_comprador",
+              "displayName": "nota_comprador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_habitaciones",
+              "displayName": "nota_habitaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_ascensor",
+              "displayName": "nota_ascensor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_credito",
+              "displayName": "nota_credito",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nota_anteriores",
+              "displayName": "nota_anteriores",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "utm_source",
+              "displayName": "utm_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "utm_medium",
+              "displayName": "utm_medium",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "utm_campaign",
+              "displayName": "utm_campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_lead",
+              "displayName": "tipo_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recursos_propios",
+              "displayName": "recursos_propios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "whatsapp_enviado",
+              "displayName": "whatsapp_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "19bd5a78-7b84-41f1-b7ea-4eba06ff7d7c",
+      "name": "Sheets — Guardar Lead1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -1792,
+        144
+      ],
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"ok\": true, \"asesor\": $('Function — Calcular Score y Armar Ficha1').first().json.asesor || \"nuestro asesor\" } }}",
+        "options": {}
+      },
+      "id": "1724c972-fe91-4025-a333-a8e1d6418584",
+      "name": "Respond — OK1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": false, \"error\": \"BROKER_INACTIVE\" }",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "id": "d810d908-d7ca-4442-825f-e4e960942563",
+      "name": "Respond — Broker Inactivo1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -2640,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ycloud.com/v2/whatsapp/messages/sendDirectly",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  from: \"+573202317110\",\n  to: \"+\" + $(\"Function — Calcular Score y Armar Ficha1\").first().json.whatsapp_destino,\n  type: \"template\",\n  template: {\n    name: \"nuevo_lead_broker_v2\",\n    language: {\n      policy: \"deterministic\",\n      code: \"es_CO\"\n    },\n    components: [\n      {\n        type: \"body\",\n        parameters: [\n          {\n            type: \"text\",\n            text: $(\"Function — Calcular Score y Armar Ficha1\").first().json.categoria\n          },\n          {\n            type: \"text\",\n            text: $(\"Function — Calcular Score y Armar Ficha1\").first().json.nombre\n          },\n          {\n            type: \"text\",\n            text: String($(\"Function — Calcular Score y Armar Ficha1\").first().json.score)\n          },\n          {\n            type: \"text\",\n            text: $(\"Function — Calcular Score y Armar Ficha1\").first().json.dashboard_url\n          }\n        ]\n      }\n    ]\n  }\n})\n}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1584,
+        144
+      ],
+      "id": "9ecf6220-404a-4fd1-a765-5344cc0b1c7c",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XdsxVO2UfSrfYkCG",
+          "name": "Header Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "46e0d85c-b9a4-4b84-b63b-148630c4198e",
+              "leftValue": "={{ $json.activo.toString().toLowerCase() }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2832,
+        128
+      ],
+      "id": "2e49e7b1-b16e-405f-8813-0c0c44236d0d",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "defcd4d4-311b-4a04-b53c-7b26d046c349",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "accepted",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1472,
+        144
+      ],
+      "id": "61557bdb-adc6-4cb3-badf-29c1d718a297",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: false, error: $json.message }) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "72abf39c-e97d-48e0-9fcb-cbc6ff7c637b",
+      "name": "Respond — Error General1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead_id": "={{ $(\"Function — Calcular Score y Armar Ficha1\").first().json.lead_id }}",
+            "whatsapp_enviado": "TRUE"
+          },
+          "matchingColumns": [
+            "lead_id"
+          ],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "broker_id",
+              "displayName": "broker_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "celular",
+              "displayName": "celular",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "accion_recomendada",
+              "displayName": "accion_recomendada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "comprador",
+              "displayName": "comprador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "habitaciones",
+              "displayName": "habitaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "parqueadero",
+              "displayName": "parqueadero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ascensor",
+              "displayName": "ascensor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "zona",
+              "displayName": "zona",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "zona_flex",
+              "displayName": "zona_flex",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "presupuesto",
+              "displayName": "presupuesto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "propiedad",
+              "displayName": "propiedad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "decisores",
+              "displayName": "decisores",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "credito",
+              "displayName": "credito",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "cuota",
+              "displayName": "cuota",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "listo",
+              "displayName": "listo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "vistos",
+              "displayName": "vistos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "horario",
+              "displayName": "horario",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nota_comprador",
+              "displayName": "nota_comprador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nota_habitaciones",
+              "displayName": "nota_habitaciones",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nota_ascensor",
+              "displayName": "nota_ascensor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nota_credito",
+              "displayName": "nota_credito",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nota_anteriores",
+              "displayName": "nota_anteriores",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "utm_source",
+              "displayName": "utm_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "utm_medium",
+              "displayName": "utm_medium",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "utm_campaign",
+              "displayName": "utm_campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tipo_lead",
+              "displayName": "tipo_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recursos_propios",
+              "displayName": "recursos_propios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "whatsapp_enviado",
+              "displayName": "whatsapp_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1312,
+        16
+      ],
+      "id": "f5fbd1c2-6e23-4be5-8d51-bd79ee5a7c8f",
+      "name": "Sheets — Marcar WhatsApp Enviado1",
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "process-lead",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "173a55ab-f759-4321-9b94-6313ec7fb6fa",
+      "name": "Webhook — Recibir Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -3216,
+        128
+      ],
+      "webhookId": "process-lead"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code — Normalizar Celular": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Buscar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Evaluar Duplicado": {
+      "main": [
+        [
+          {
+            "node": "If — Es Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If — Es Duplicado": {
+      "main": [
+        [
+          {
+            "node": "Respond — Lead Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Function — Calcular Score y Armar Ficha1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Buscar Duplicado": {
+      "main": [
+        [
+          {
+            "node": "Code — Evaluar Duplicado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer Config Broker1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function — Calcular Score y Armar Ficha1": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Guardar Lead1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Guardar Lead1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Code — Normalizar Celular",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond — Broker Inactivo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Marcar WhatsApp Enviado1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond — Error General1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Marcar WhatsApp Enviado1": {
+      "main": [
+        [
+          {
+            "node": "Respond — OK1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook — Recibir Lead": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer Config Broker1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1c037b0c-60bf-4f38-afc4-c8dcc48c7010",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdfebaf6ca5b8fa954116d746e5fc3d8a71a33fb84913eb74fc5879bfdc23df5"
+  },
+  "id": "iVH6ffI90r86rk6Q",
+  "tags": []
+}

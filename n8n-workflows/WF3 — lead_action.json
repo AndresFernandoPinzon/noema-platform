@@ -1,0 +1,472 @@
+{
+  "name": "WF3 — lead_action",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-action",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        -160
+      ],
+      "id": "cda91f41-7168-45e0-a12b-0ef65fb5e111",
+      "name": "Webhook — Lead Action",
+      "webhookId": "lead-action"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "brokers",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -896,
+        -160
+      ],
+      "id": "34b0fb84-3de5-4533-b84f-921010a9de12",
+      "name": "Sheets — Leer brokers",
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook — Lead Action').first().json.body || {};\n\nconst ESTADOS = new Set([\n  'nuevo',\n  'contactado',\n  'calificado',\n  'visita_agendada',\n  'en_seguimiento',\n  'descartado',\n  'convertido'\n]);\n\nconst TIPIFICACIONES = new Set([\n  '',\n  'listo_para_visita',\n  'credito_pendiente',\n  'sin_cuota_inicial',\n  'presupuesto_bajo',\n  'zona_no_disponible',\n  'solo_curioso',\n  'no_responde',\n  'datos_incompletos',\n  'duplicado',\n  'referido_aliado'\n]);\n\nfunction clean(value) {\n  return String(value ?? '').trim();\n}\n\nfunction fail(error, details = {}) {\n  return [{ json: { ok: false, error, details } }];\n}\n\nconst broker_id = clean(body.broker_id);\nconst token = clean(body.token || body.token_admin);\nconst lead_id = clean(body.lead_id);\nconst action = clean(body.action);\nconst estado = clean(body.estado || '');\nconst tipificacion = clean(body.tipificacion || '');\nconst nota_gestion = clean(body.nota_gestion || '').slice(0, 500);\n\nif (!broker_id) return fail('validation_error', { field: 'broker_id', message: 'broker_id requerido' });\nif (!token) return fail('validation_error', { field: 'token', message: 'token requerido' });\nif (!lead_id) return fail('validation_error', { field: 'lead_id', message: 'lead_id requerido' });\nif (action !== 'update_management') return fail('validation_error', { field: 'action', message: 'action debe ser update_management' });\nif (!ESTADOS.has(estado)) return fail('validation_error', { field: 'estado', message: 'estado no permitido' });\nif (!TIPIFICACIONES.has(tipificacion)) return fail('validation_error', { field: 'tipificacion', message: 'tipificacion no permitida' });\n\nconst brokers = $items('Sheets — Leer brokers');\nconst broker = brokers.find(item =>\n  clean(item.json.broker_id) === broker_id &&\n  clean(item.json.token_admin) === token\n);\n\nif (!broker) return fail('unauthorized');\n\nconst now = new Date().toISOString();\n\nreturn [{\n  json: {\n    ok: true,\n    broker_id,\n    lead_id,\n    action,\n    estado,\n    tipificacion,\n    nota_gestion,\n    updated_at: now,\n    ultima_actividad_at: now\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        -160
+      ],
+      "id": "1e40f848-5b48-444e-bb8b-aef8402a4972",
+      "name": "Code — Validar Acceso y Payload"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "access-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        -160
+      ],
+      "id": "16613d7e-d0e1-4849-89c9-82a1ae08a6e3",
+      "name": "If — Acceso OK"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        -272
+      ],
+      "id": "02d51ad1-4c80-4d36-8b6f-049838823432",
+      "name": "Sheets — Leer leads",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $('Code — Validar Acceso y Payload').first().json;\n\nfunction clean(value) {\n  return String(value ?? '').trim();\n}\n\nfunction fail(error, details = {}) {\n  return [{ json: { ok: false, error, details } }];\n}\n\nconst leads = $input.all()\n  .map(item => item.json)\n  .filter(row => clean(row.lead_id));\n\nconst matches = leads.filter(row => clean(row.lead_id) === req.lead_id);\n\nif (!matches.length) {\n  return fail('lead_not_found');\n}\n\nif (matches.length > 1) {\n  return fail('duplicate_lead_id', { lead_id: req.lead_id, count: matches.length });\n}\n\nconst lead = matches[0];\n\nif (clean(lead.broker_id) !== req.broker_id) {\n  return fail('lead_not_found');\n}\n\nreturn [{\n  json: {\n    ok: true,\n    broker_id: req.broker_id,\n    lead_id: req.lead_id,\n    estado: req.estado,\n    tipificacion: req.tipificacion,\n    nota_gestion: req.nota_gestion,\n    updated_at: req.updated_at,\n    ultima_actividad_at: req.ultima_actividad_at,\n    previous_estado: clean(lead.estado || ''),\n    previous_tipificacion: clean(lead.tipificacion || ''),\n    previous_nota_gestion: clean(lead.nota_gestion || '')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -272
+      ],
+      "id": "42d0193f-01ca-401e-b7ef-d7d78d6fb5db",
+      "name": "Code — Validar Lead y Preparar Update"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "lead-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -272
+      ],
+      "id": "d36b4bf5-e6fa-4934-a0a4-fd2ea00cd3a0",
+      "name": "If — Lead OK"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk",
+          "mode": "list",
+          "cachedResultName": "Perfilador Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 578412142,
+          "mode": "list",
+          "cachedResultName": "leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Rz6bi0ipmyL2-yYaKT0Hd8DUaAgHVKdPH2X7glxagk/edit#gid=578412142"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "lead_id": "={{ $json.lead_id }}",
+            "estado": "={{ $json.estado }}",
+            "tipificacion": "={{ $json.tipificacion }}",
+            "nota_gestion": "={{ $json.nota_gestion }}",
+            "updated_at": "={{ $json.updated_at }}",
+            "ultima_actividad_at": "={{ $json.ultima_actividad_at }}"
+          },
+          "matchingColumns": [
+            "lead_id"
+          ],
+          "schema": [
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado",
+              "displayName": "estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipificacion",
+              "displayName": "tipificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nota_gestion",
+              "displayName": "nota_gestion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ultima_actividad_at",
+              "displayName": "ultima_actividad_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        -384
+      ],
+      "id": "a8641337-97d7-4558-a2c6-30b909f338fd",
+      "name": "Sheets — Actualizar Lead CRM",
+      "credentials": {
+        "googleApi": {
+          "id": "VZHNhcSJlEipRTSx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const req = $('Code — Validar Lead y Preparar Update').first().json;\n\nreturn [{\n  json: {\n    ok: true,\n    lead_id: req.lead_id,\n    broker_id: req.broker_id,\n    estado: req.estado,\n    tipificacion: req.tipificacion,\n    nota_gestion: req.nota_gestion,\n    updated_at: req.updated_at,\n    ultima_actividad_at: req.ultima_actividad_at\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -384
+      ],
+      "id": "e1c8d30d-cf12-409a-937b-c59fe5f4b2b8",
+      "name": "Code — Formatear OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        -384
+      ],
+      "id": "0853407c-3a8c-4a5e-a667-2acf337cccdc",
+      "name": "Respond — OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "0e24411a-f848-468b-b736-ea261872a90b",
+      "name": "Respond — Error"
+    }
+  ],
+  "connections": {
+    "Webhook — Lead Action": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer brokers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer brokers": {
+      "main": [
+        [
+          {
+            "node": "Code — Validar Acceso y Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Validar Acceso y Payload": {
+      "main": [
+        [
+          {
+            "node": "If — Acceso OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If — Acceso OK": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Leer leads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond — Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Leer leads": {
+      "main": [
+        [
+          {
+            "node": "Code — Validar Lead y Preparar Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Validar Lead y Preparar Update": {
+      "main": [
+        [
+          {
+            "node": "If — Lead OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If — Lead OK": {
+      "main": [
+        [
+          {
+            "node": "Sheets — Actualizar Lead CRM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond — Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets — Actualizar Lead CRM": {
+      "main": [
+        [
+          {
+            "node": "Code — Formatear OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code — Formatear OK": {
+      "main": [
+        [
+          {
+            "node": "Respond — OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-30T00:00:00.000Z",
+  "versionId": "e50e91ee-25c6-4d25-9091-c49a0f458b71",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdfebaf6ca5b8fa954116d746e5fc3d8a71a33fb84913eb74fc5879bfdc23df5"
+  }
+}
