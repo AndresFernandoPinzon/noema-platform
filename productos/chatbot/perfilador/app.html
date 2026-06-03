@@ -16,8 +16,8 @@
   --border:#E5E7EB;--surface:#F9FAFB;--white:#FFFFFF;
   --radius:14px;--radius-sm:10px;--radius-xs:7px;
 }
-html,body{min-height:100vh;background:linear-gradient(135deg,#EEF3FF 0%,#F0FDF9 100%);font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--text)}
-#app{max-width:580px;margin:0 auto;padding:24px 16px 48px}
+html,body{min-height:100vh;background:radial-gradient(circle at 12% 0%,rgba(27,79,216,0.08),transparent 30%),linear-gradient(180deg,#FBFAF7 0%,#F5F7FB 58%,#EEF3FF 100%);font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--text)}
+#app{max-width:600px;margin:0 auto;padding:22px 16px 40px}
 
 /* LOADING */
 #loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
@@ -25,75 +25,102 @@ html,body{min-height:100vh;background:linear-gradient(135deg,#EEF3FF 0%,#F0FDF9 
 @keyframes spin{to{transform:rotate(360deg)}}
 #loading-screen p{font-size:14px;color:var(--text-2)}
 
-/* BROKER BAR */
-.broker-bar{background:var(--brand);border-radius:var(--radius) var(--radius) 0 0;padding:16px 20px;display:flex;align-items:center;gap:13px}
-.broker-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+/* ADVISOR HEADER */
+.broker-bar{background:rgba(255,255,255,0.9);backdrop-filter:blur(18px);border:1px solid rgba(226,232,240,0.95);border-bottom:none;border-radius:20px 20px 0 0;padding:14px 17px;display:flex;align-items:center;gap:11px;box-shadow:0 16px 36px rgba(15,23,42,0.07)}
+.broker-avatar{position:relative;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 26%,rgba(255,255,255,0.42),transparent 21%),linear-gradient(145deg,#0F1F4A 0%,var(--brand) 58%,#4F7BF7 100%);border:3px solid rgba(255,255,255,0.96);box-shadow:inset 0 1px 0 rgba(255,255,255,0.24),inset 0 -10px 18px rgba(15,31,74,0.18),0 10px 22px rgba(27,79,216,0.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0;letter-spacing:0.04em;text-shadow:0 1px 2px rgba(15,23,42,0.22)}
+.broker-avatar::before{content:'';position:absolute;inset:4px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);pointer-events:none}
+.broker-avatar::after{content:'';position:absolute;right:1px;bottom:1px;width:9px;height:9px;border-radius:50%;background:var(--success);border:2px solid #fff;box-shadow:0 0 0 2px rgba(15,123,85,0.1),0 2px 6px rgba(15,123,85,0.28)}
 .broker-info{flex:1;min-width:0}
-.broker-name{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.broker-sub{font-size:11px;color:rgba(255,255,255,0.72);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.broker-logo{font-size:11px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:0.07em;background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.broker-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.broker-sub{font-size:11px;font-weight:500;color:var(--text-2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.broker-sub::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--success);margin-right:6px;box-shadow:0 0 0 3px rgba(15,123,85,0.12);vertical-align:1px}
+.broker-logo{font-size:10px;font-weight:800;color:#172554;letter-spacing:0.09em;background:#F1F5F9;padding:5px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0}
 
 /* TRUST BAR */
 .trust-bar{
-  background:#F8FAFF;
-  border:1px solid #DBEAFE;
-  border-top:none;
-  padding:7px 20px;
+  background:rgba(255,255,255,0.68);
+  border-left:1px solid rgba(226,232,240,0.95);
+  border-right:1px solid rgba(226,232,240,0.95);
+  border-top:1px solid rgba(226,232,240,0.7);
+  border-bottom:none;
+  padding:7px 17px;
   display:flex;
   align-items:center;
-  gap:16px;
+  gap:14px;
+  flex-wrap:wrap;
 }
 .trust-item{
   display:flex;
   align-items:center;
   gap:5px;
   font-size:10px;
-  color:#1F2937;
+  color:var(--text-2);
   font-weight:600;
 }
 
-/* CARD */
-.card{background:var(--white);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:26px 26px 24px;box-shadow:0 4px 24px rgba(27,79,216,0.08),0 1px 4px rgba(0,0,0,0.04)}
+/* CHAT SHELL */
+.card{background:rgba(255,255,255,0.92);border:1px solid rgba(226,232,240,0.95);border-top:none;border-radius:0 0 20px 20px;padding:22px 22px 22px;box-shadow:0 18px 48px rgba(15,23,42,0.08),0 1px 4px rgba(0,0,0,0.035);min-height:470px}
 
 /* PROGRESS */
-.prog-wrap{margin-bottom:22px}
-.prog-meta{display:flex;justify-content:space-between;margin-bottom:7px}
+.prog-wrap{margin:-22px -22px 20px}
+.prog-meta{display:none}
 .prog-meta span{font-size:11px;color:var(--text-2);font-weight:500}
-.prog-track{height:5px;background:#F3F4F6;border-radius:3px;overflow:hidden}
-.prog-fill{height:5px;background:linear-gradient(90deg,var(--brand) 0%,var(--brand-mid) 100%);border-radius:3px;transition:width 0.45s cubic-bezier(.4,0,.2,1)}
+.prog-track{height:2px;background:rgba(226,232,240,0.9);overflow:hidden}
+.prog-fill{height:2px;background:linear-gradient(90deg,#172554 0%,var(--brand) 100%);transition:width 0.45s cubic-bezier(.4,0,.2,1)}
 
 /* STEPS */
 .step{display:none}
-.step.active{display:block;animation:fadeUp 0.28s cubic-bezier(.4,0,.2,1)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step.active{display:block;animation:fadeUp 0.24s cubic-bezier(.4,0,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* HEADERS */
-.section-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--brand);background:var(--brand-light);padding:3px 11px;border-radius:20px;margin-bottom:13px}
-.q-text{font-size:18px;font-weight:700;color:var(--text);line-height:1.45;margin-bottom:7px}
-.q-sub{font-size:13px;color:var(--text-2);line-height:1.6;margin-bottom:18px}
+/* COMPACT ANSWER SUMMARY */
+.answer-summary{display:none;margin:0 0 14px;padding:8px 9px;background:rgba(248,250,252,0.6);border:1px solid rgba(226,232,240,0.9);border-radius:15px}
+.answer-summary.has-items{display:block;animation:fadeUp 0.2s cubic-bezier(.4,0,.2,1)}
+.summary-title{font-size:8.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.summary-list{display:flex;flex-wrap:wrap;gap:5px}
+.summary-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 7px;border-radius:999px;background:#fff;border:1px solid #E5E7EB;color:var(--text);font-size:10.5px;font-weight:500;box-shadow:0 3px 10px rgba(15,23,42,0.025);animation:chipIn 0.18s cubic-bezier(.4,0,.2,1)}
+.summary-chip::before{content:'✓';color:var(--success);font-weight:800}
+.summary-more{display:inline-flex;align-items:center;padding:4px 6px;border-radius:999px;background:transparent;color:var(--text-3);font-size:10.5px;font-weight:600}
+@keyframes chipIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.progress-nudge{display:none;margin:0 4px 20px;font-size:12px;font-weight:400;line-height:1.55;color:var(--text-2)}
+.progress-nudge.show{display:block;animation:fadeUp 0.22s cubic-bezier(.4,0,.2,1)}
 
-/* OPTIONS */
-.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:6px}
-.opt{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--white);text-align:left;width:100%;transition:border-color 0.15s,background 0.15s,box-shadow 0.15s}
-.opt:hover{border-color:#93A5FB;background:#F5F7FF;box-shadow:0 2px 8px rgba(27,79,216,0.08)}
-.opt.sel{border-color:var(--brand);background:var(--brand-light);box-shadow:0 0 0 3px rgba(27,79,216,0.1)}
-.opt-radio{width:20px;height:20px;border-radius:50%;border:2px solid #D1D5DB;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--white)}
-.opt.sel .opt-radio{border-color:var(--brand);background:var(--brand)}
-.opt.sel .opt-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff}
-.opt-label{flex:1;font-size:14px;color:var(--text);font-weight:500;line-height:1.4}
-.opt.sel .opt-label{color:var(--brand)}
-.opt-emoji{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+/* ADVISOR MESSAGE */
+.section-pill{display:none!important}
+.section-pill::before{content:none!important}
+.q-text{position:relative;font-size:18px;font-weight:700;color:var(--text);line-height:1.48;margin:26px 0 11px;padding:17px 18px;background:#F8FAFF;border:1px solid #E0E7FF;border-radius:17px 17px 17px 6px;box-shadow:0 8px 22px rgba(27,79,216,0.055)}
+.q-text::before{content:'Asesor';position:absolute;left:0;top:-24px;font-size:11px;font-weight:700;color:var(--text-3)}
+.q-sub{font-size:13px;font-weight:400;color:var(--text-2);line-height:1.6;margin:0 0 18px;padding:0 4px}
+
+/* QUICK REPLIES */
+.opts{display:flex;flex-direction:column;gap:7px;margin:15px 0 8px}
+.opt{position:relative;display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid #E2E8F0;border-radius:999px;cursor:pointer;background:rgba(255,255,255,0.9);text-align:left;width:100%;min-height:44px;transition:border-color 0.16s,background 0.16s,box-shadow 0.16s,transform 0.12s;color:var(--text)}
+.opt:hover{border-color:#AFC2FF;background:#F8FAFF;box-shadow:0 10px 26px rgba(27,79,216,0.1);transform:translateY(-1px)}
+.opt.sel{border-color:var(--brand);background:#F8FAFF;box-shadow:0 0 0 3px rgba(27,79,216,0.07),0 10px 24px rgba(27,79,216,0.09)}
+.opt-radio{width:8px;height:8px;border-radius:50%;border:0;flex-shrink:0;background:#CBD5E1;box-shadow:0 0 0 4px #F1F5F9;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.opt.sel .opt-radio{background:var(--brand);box-shadow:0 0 0 4px rgba(27,79,216,0.12)}
+.opt.sel .opt-radio::after{content:'';width:3px;height:3px;border-radius:50%;background:#fff}
+.opt-label{flex:1;font-size:13.5px;color:var(--text);font-weight:500;line-height:1.4}
+.opt.sel .opt-label{color:var(--brand-dark)}
 .opt-sublabel{font-size:11px;color:var(--text-2);margin-top:2px;font-weight:400}
 
 /* FIELDS */
 .field-group{margin-bottom:14px}
 .field-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:4px}
 .field-req{color:var(--brand)}
-.f-input{width:100%;padding:11px 14px;font-size:14px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;border:1.5px solid var(--border);border-radius:var(--radius-xs);color:var(--text);background:var(--white);outline:none;transition:border 0.15s,box-shadow 0.15s}
-.f-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,79,216,0.1)}
+.f-input{width:100%;padding:13px 15px;font-size:14px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;border:1px solid #E2E8F0;border-radius:16px;color:var(--text);background:rgba(255,255,255,0.94);outline:none;transition:border 0.15s,box-shadow 0.15s,background 0.15s}
+.f-input:focus{border-color:#AFC2FF;background:#fff;box-shadow:0 0 0 4px rgba(27,79,216,0.08)}
 .f-input::placeholder{color:var(--text-3)}
 textarea.f-input{resize:none;min-height:72px;line-height:1.55}
 .f-hint{font-size:11px;color:var(--text-3);margin-top:4px;line-height:1.5}
+
+/* OPTIONAL DETAILS */
+.optional-detail{margin-top:12px;border:1px dashed var(--border);border-radius:var(--radius-xs);background:var(--surface);overflow:hidden}
+.optional-detail summary{list-style:none;cursor:pointer;padding:10px 12px;font-size:12px;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:7px}
+.optional-detail summary::-webkit-details-marker{display:none}
+.optional-detail summary::before{content:'+';width:18px;height:18px;border-radius:50%;background:var(--brand-light);display:inline-flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.optional-detail[open] summary::before{content:'-'}
+.optional-detail .field-group{margin:0;padding:0 12px 12px}
 
 /* PRIVACY NOTE */
 .privacy-note{display:flex;align-items:flex-start;gap:8px;background:#F8FAFF;border:1px solid #DBEAFE;border-radius:var(--radius-xs);padding:10px 13px;margin-top:10px}
@@ -106,6 +133,9 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
 .btn-primary:disabled{background:#9CA3AF;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-retry{width:100%;padding:12px;font-size:14px;font-weight:600;color:var(--brand);background:var(--brand-light);border:1.5px solid rgba(27,79,216,0.25);border-radius:var(--radius-sm);cursor:pointer;margin-top:10px;transition:all 0.15s}
 .btn-retry:hover{background:var(--brand);color:#fff}
+.auto-step .btn-primary{display:none;margin-top:12px;padding:10px 12px;font-size:12px;color:var(--brand);background:transparent;border:1px solid rgba(27,79,216,0.16);box-shadow:none}
+.auto-step .btn-primary:hover{background:var(--brand-light);color:var(--brand);transform:none;box-shadow:none}
+.auto-step:has(.optional-detail[open]) .btn-primary{display:flex}
 
 /* ALERTS */
 .alert-box{border-radius:var(--radius-sm);padding:15px 16px;margin-bottom:18px;display:flex;gap:13px;align-items:flex-start}
@@ -150,7 +180,24 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
 .screen-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
 .screen-sub{font-size:13px;color:var(--text-2);line-height:1.6;max-width:340px}
 
-@media(max-width:480px){#app{padding:16px 10px 36px}.card{padding:20px 18px}.q-text{font-size:16px}.btn-primary{font-size:14px;padding:13px}}
+@media(max-width:480px){
+  #app{padding:10px 9px 30px}
+  .broker-bar{border-radius:17px 17px 0 0;padding:12px 13px;gap:9px}
+  .broker-avatar{width:38px;height:38px;font-size:13px}
+  .broker-avatar::after{width:8px;height:8px}
+  .broker-logo{font-size:9px;padding:4px 8px}
+  .trust-bar{padding:7px 13px;gap:8px}
+  .trust-item{font-size:9px}
+  .card{padding:20px 15px 18px;border-radius:0 0 17px 17px;min-height:440px}
+  .prog-wrap{margin:-20px -15px 19px}
+  .answer-summary{margin-bottom:18px;padding:10px}
+  .summary-list{gap:6px}
+  .summary-chip{font-size:11px;max-width:100%}
+  .q-text{font-size:16px;padding:15px 15px;margin-top:25px;border-radius:16px 16px 16px 6px}
+  .q-sub{font-size:12px}
+  .opt{border-radius:15px;padding:10px 12px;min-height:44px}
+  .btn-primary{font-size:14px;padding:13px}
+}
 
 /* UX TECH UPGRADES */
 /* Step counter chip */
@@ -161,15 +208,14 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
 .opt-check{width:18px;height:18px;border-radius:50%;background:var(--brand);display:none;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto}
 .opt-check::after{content:'✓';font-size:10px;color:#fff;font-weight:700}
 .opt.sel .opt-check{display:flex}
-.opt.sel .opt-emoji{display:none}
 /* Kbd hint */
 .kbd-hint{font-size:10px;color:var(--text-3);text-align:center;margin-top:12px;opacity:0.7}
 /* Floating progress ring on loading */
 .spinner-wrap{position:relative;width:48px;height:48px}
 .spinner-wrap .spinner{width:48px;height:48px;border-width:3px}
 .spinner-wrap .spinner-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px}
-/* Section pill dot */
-.section-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--brand);display:inline-block}
+/* Section label cleanup */
+.section-pill::before{content:none}
 /* Smooth card enter */
 .card{animation:cardIn 0.35s cubic-bezier(.4,0,.2,1)}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -184,7 +230,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
       <div class="spinner"></div>
       <div class="spinner-icon">🏠</div>
     </div>
-    <p>Preparando tu formulario personalizado...</p>
+    <p>Preparando tu perfil...</p>
   </div>
 
   <!-- FORMULARIO -->
@@ -207,31 +253,33 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
 
     <div class="card">
       <div class="prog-wrap">
-        <div class="prog-meta"><span id="step-lbl">Paso 1 de 12</span><span id="pct-lbl">0%</span></div>
+        <div class="prog-meta"><span id="step-lbl">Tu avance</span><span id="pct-lbl">0%</span></div>
         <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
       </div>
+      <div class="answer-summary" id="answer-summary" aria-live="polite"></div>
+      <div class="progress-nudge" id="progress-nudge">Muy bien. Tu asesor ya tiene contexto para orientarte mejor.</div>
 
       <!-- S1: Bienvenida -->
       <div class="step active" id="s1">
         <div class="section-pill">Bienvenida</div>
-        <p class="q-text">Hola, estoy aquí para ayudarte a encontrar tu apartamento ideal</p>
+        <p class="q-text">Vamos a entender qué estás buscando para ayudarte mejor</p>
         <p class="q-sub" id="intro-text">Cargando...</p>
         <div style="display:flex;flex-direction:column;gap:9px;margin:18px 0 4px">
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>Te hacemos preguntas clave sobre lo que buscas</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>Validamos que tengas el perfil listo para comprar</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>Entendemos lo que estás buscando</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>Revisamos tu momento de compra</div>
           <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-2)"><span style="width:22px;height:22px;border-radius:50%;background:var(--brand-light);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span><span id="asesor-texto">Nuestro asesor te contacta con opciones a tu medida</span></div>
         </div>
         <div class="privacy-note" style="margin-top:14px">
           <span>🔒 <strong>Tu información es 100% confidencial.</strong> Solo la usa tu asesor para encontrarte las mejores opciones. No se comparte con terceros ni se usa para publicidad.</span>
         </div>
-        <button class="btn-primary" onclick="goTo(2)">Comenzar ahora <span>→</span></button>
+        <button class="btn-primary" onclick="goTo(2)">Empezar mi perfil <span>→</span></button>
       </div>
 
       <!-- S2: Contacto -->
       <div class="step" id="s2">
         <div class="section-pill">Tus datos</div>
-        <p class="q-text">¿Cómo te llamas y cómo te contactamos?</p>
-        <p class="q-sub" id="asesor-sub">Tu asesor te contactará directamente con las mejores opciones. Tu información nunca se comparte con otras personas ni empresas.</p>
+        <p class="q-text">¿Cómo te llamas y cómo podemos contactarte?</p>
+        <p class="q-sub" id="asesor-sub">Tu asesor usará estos datos solo para contactarte sobre tu búsqueda. Tu información nunca se comparte con otras personas ni empresas.</p>
         <div class="field-group">
           <div class="field-label">Nombre completo <span class="field-req">*</span></div>
           <input class="f-input" type="text" id="nombre" placeholder="Ej: Carlos Ramírez" autocomplete="name"/>
@@ -243,74 +291,83 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
         <div class="privacy-note">
           <span>🚫 <strong>Sin spam.</strong> Tu número solo se usa para que tu asesor te contacte con opciones relevantes. No recibirás llamadas de terceros ni mensajes no solicitados.</span>
         </div>
-        <button class="btn-primary" onclick="next2()">Continuar <span>→</span></button>
+        <button class="btn-primary" onclick="next2()">Guardar y seguir <span>→</span></button>
       </div>
 
       <!-- S3: Para quién -->
-      <div class="step" id="s3">
+      <div class="step auto-step" id="s3">
         <div class="section-pill">Intención de compra</div>
         <p class="q-text">¿Para quién estás buscando el apartamento?</p>
         <p class="q-sub">Esto nos ayuda a entender quién va a vivir allí y qué necesidades tiene el hogar.</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'comprador','yo_familia')"><div class="opt-radio"></div><div><div class="opt-label">Para mí y mi familia</div><div class="opt-sublabel">Somos los que vamos a vivir allí</div></div><span class="opt-emoji">🏡</span></button>
-          <button class="opt" onclick="sel(this,'comprador','yo_solo')"><div class="opt-radio"></div><span class="opt-label">Para mí solo(a)</span><span class="opt-emoji">👤</span></button>
-          <button class="opt" onclick="sel(this,'comprador','otra_persona')"><div class="opt-radio"></div><div><div class="opt-label">Para otra persona</div><div class="opt-sublabel">Padres, familiar, tercero</div></div><span class="opt-emoji">👨‍👩‍👧</span></button>
-          <button class="opt" onclick="sel(this,'comprador','inversion')"><div class="opt-radio"></div><div><div class="opt-label">Para invertir</div><div class="opt-sublabel">No voy a vivir allí, es para arrendar</div></div><span class="opt-emoji">📈</span></button>
+          <button class="opt" onclick="selNext(this,'comprador','yo_familia',4)"><div class="opt-radio"></div><div><div class="opt-label">Para mí y mi familia</div><div class="opt-sublabel">Somos los que vamos a vivir allí</div></div></button>
+          <button class="opt" onclick="selNext(this,'comprador','yo_solo',4)"><div class="opt-radio"></div><span class="opt-label">Para mí solo(a)</span></button>
+          <button class="opt" onclick="selNext(this,'comprador','otra_persona',4)"><div class="opt-radio"></div><div><div class="opt-label">Para otra persona</div><div class="opt-sublabel">Padres, familiar, tercero</div></div></button>
+          <button class="opt" onclick="selNext(this,'comprador','inversion',4)"><div class="opt-radio"></div><div><div class="opt-label">Para invertir</div><div class="opt-sublabel">No voy a vivir allí, es para arrendar</div></div></button>
         </div>
-        <div class="field-group" style="margin-top:14px">
-          <div class="field-label">¿Algo más que debamos saber sobre quién va a vivir allí?</div>
-          <textarea class="f-input" id="nota_comprador" placeholder="Ej: somos 4 personas, tenemos mascotas, hay un adulto mayor..."></textarea>
-        </div>
+        <details class="optional-detail">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Algo más que debamos saber sobre quién va a vivir allí?</div>
+            <textarea class="f-input" id="nota_comprador" placeholder="Ej: somos 4 personas, tenemos mascotas, hay un adulto mayor..."></textarea>
+          </div>
+        </details>
         <button class="btn-primary" onclick="nextReq(3,4,'comprador')">Continuar <span>→</span></button>
       </div>
 
       <!-- S4: Habitaciones -->
-      <div class="step" id="s4">
+      <div class="step auto-step" id="s4">
         <div class="section-pill">Características</div>
         <p class="q-text">¿Cuántas habitaciones necesitas sí o sí?</p>
         <p class="q-sub">Dinos el mínimo indispensable — así no te mostramos opciones que no aplican.</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'habitaciones','1')"><div class="opt-radio"></div><span class="opt-label">1 habitación</span></button>
-          <button class="opt" onclick="sel(this,'habitaciones','2')"><div class="opt-radio"></div><span class="opt-label">2 habitaciones</span></button>
-          <button class="opt" onclick="sel(this,'habitaciones','3')"><div class="opt-radio"></div><span class="opt-label">3 habitaciones</span></button>
-          <button class="opt" onclick="sel(this,'habitaciones','4+')"><div class="opt-radio"></div><span class="opt-label">4 o más habitaciones</span></button>
-          <button class="opt" onclick="sel(this,'habitaciones','flexible')"><div class="opt-radio"></div><span class="opt-label">Flexible — cualquiera me sirve</span></button>
+          <button class="opt" onclick="selNext(this,'habitaciones','1',5)"><div class="opt-radio"></div><span class="opt-label">1 habitación</span></button>
+          <button class="opt" onclick="selNext(this,'habitaciones','2',5)"><div class="opt-radio"></div><span class="opt-label">2 habitaciones</span></button>
+          <button class="opt" onclick="selNext(this,'habitaciones','3',5)"><div class="opt-radio"></div><span class="opt-label">3 habitaciones</span></button>
+          <button class="opt" onclick="selNext(this,'habitaciones','4+',5)"><div class="opt-radio"></div><span class="opt-label">4 o más habitaciones</span></button>
+          <button class="opt" onclick="selNext(this,'habitaciones','flexible',5)"><div class="opt-radio"></div><span class="opt-label">Flexible — cualquiera me sirve</span></button>
         </div>
-        <div class="field-group" style="margin-top:14px">
-          <div class="field-label">¿Algún detalle adicional sobre los espacios?</div>
-          <textarea class="f-input" id="nota_habitaciones" placeholder="Ej: necesito estudio, dos baños mínimo, balcón..."></textarea>
-        </div>
+        <details class="optional-detail">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Algún detalle adicional sobre los espacios?</div>
+            <textarea class="f-input" id="nota_habitaciones" placeholder="Ej: necesito estudio, dos baños mínimo, balcón..."></textarea>
+          </div>
+        </details>
         <button class="btn-primary" onclick="nextReq(4,5,'habitaciones')">Continuar <span>→</span></button>
       </div>
 
       <!-- S5: Parqueadero -->
-      <div class="step" id="s5">
+      <div class="step auto-step" id="s5">
         <div class="section-pill">Características</div>
         <p class="q-text">¿Necesitas parqueadero?</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'parqueadero','carro')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo carro</span><span class="opt-emoji">🚗</span></button>
-          <button class="opt" onclick="sel(this,'parqueadero','moto')"><div class="opt-radio"></div><span class="opt-label">Sí, tengo moto</span><span class="opt-emoji">🛵</span></button>
-          <button class="opt" onclick="sel(this,'parqueadero','carro_moto')"><div class="opt-radio"></div><span class="opt-label">Tengo carro y moto</span></button>
-          <button class="opt" onclick="sel(this,'parqueadero','no')"><div class="opt-radio"></div><span class="opt-label">No, no tengo vehículo</span></button>
+          <button class="opt" onclick="selNext(this,'parqueadero','carro',6)"><div class="opt-radio"></div><span class="opt-label">Sí, tengo carro</span></button>
+          <button class="opt" onclick="selNext(this,'parqueadero','moto',6)"><div class="opt-radio"></div><span class="opt-label">Sí, tengo moto</span></button>
+          <button class="opt" onclick="selNext(this,'parqueadero','carro_moto',6)"><div class="opt-radio"></div><span class="opt-label">Tengo carro y moto</span></button>
+          <button class="opt" onclick="selNext(this,'parqueadero','no',6)"><div class="opt-radio"></div><span class="opt-label">No, no tengo vehículo</span></button>
         </div>
         <button class="btn-primary" onclick="nextReq(5,6,'parqueadero')">Continuar <span>→</span></button>
       </div>
 
       <!-- S6: Ascensor -->
-      <div class="step" id="s6">
+      <div class="step auto-step" id="s6">
         <div class="section-pill">Características</div>
         <p class="q-text">¿El apartamento debe tener ascensor?</p>
         <p class="q-sub">Clave si va a vivir allí alguien mayor, con movilidad reducida, o si prefieren no subir muchos pisos.</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'ascensor','cualquier')"><div class="opt-radio"></div><span class="opt-label">No hay restricción — cualquier piso está bien</span></button>
-          <button class="opt" onclick="sel(this,'ascensor','con_ascensor')"><div class="opt-radio"></div><span class="opt-label">Sí o sí debe tener ascensor</span></button>
-          <button class="opt" onclick="sel(this,'ascensor','piso_bajo')"><div class="opt-radio"></div><span class="opt-label">Sin ascensor está bien, máximo piso 3</span></button>
-          <button class="opt" onclick="sel(this,'ascensor','piso_bajo_ascensor')"><div class="opt-radio"></div><span class="opt-label">Piso bajo con ascensor disponible en el edificio</span></button>
+          <button class="opt" onclick="selNext(this,'ascensor','cualquier',7)"><div class="opt-radio"></div><span class="opt-label">No hay restricción — cualquier piso está bien</span></button>
+          <button class="opt" onclick="selNext(this,'ascensor','con_ascensor',7)"><div class="opt-radio"></div><span class="opt-label">Sí o sí debe tener ascensor</span></button>
+          <button class="opt" onclick="selNext(this,'ascensor','piso_bajo',7)"><div class="opt-radio"></div><span class="opt-label">Sin ascensor está bien, máximo piso 3</span></button>
+          <button class="opt" onclick="selNext(this,'ascensor','piso_bajo_ascensor',7)"><div class="opt-radio"></div><span class="opt-label">Piso bajo con ascensor disponible en el edificio</span></button>
         </div>
-        <div class="field-group" style="margin-top:14px">
-          <div class="field-label">¿Hay algún motivo específico? (opcional)</div>
-          <textarea class="f-input" id="nota_ascensor" placeholder="Ej: mi mamá tiene 75 años y no puede subir escaleras..."></textarea>
-        </div>
+        <details class="optional-detail">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Hay algún motivo específico?</div>
+            <textarea class="f-input" id="nota_ascensor" placeholder="Ej: mi mamá tiene 75 años y no puede subir escaleras..."></textarea>
+          </div>
+        </details>
         <button class="btn-primary" onclick="nextReq(6,7,'ascensor')">Continuar <span>→</span></button>
       </div>
 
@@ -323,46 +380,54 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
           <div class="field-label">Barrio, sector o localidad</div>
           <input class="f-input" type="text" id="zona" placeholder="Ej: Chapinero, Suba, Engativá, Kennedy..." id="zona-input"/>
         </div>
-        <div class="field-group">
-          <div class="field-label">¿Por qué te llama la atención esa zona?</div>
-          <textarea class="f-input" id="zona_razon" placeholder="Ej: cerca del trabajo, colegio de los niños, familia..."></textarea>
-        </div>
-        <div class="field-group">
-          <div class="field-label">¿Estarías abierto(a) a evaluar otras zonas?</div>
-          <div class="opts" style="margin-bottom:0">
-            <button class="opt" onclick="sel(this,'zona_flex','si')"><div class="opt-radio"></div><span class="opt-label">Sí, si el precio y las condiciones lo justifican</span></button>
-            <button class="opt" onclick="sel(this,'zona_flex','no')"><div class="opt-radio"></div><span class="opt-label">No, esa zona es definitiva para mí</span></button>
+        <details class="optional-detail">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Por qué te llama la atención esa zona?</div>
+            <textarea class="f-input" id="zona_razon" placeholder="Ej: cerca del trabajo, colegio de los niños, familia..."></textarea>
           </div>
+        </details>
+        <button class="btn-primary" onclick="nextZona()">Guardar y seguir <span>→</span></button>
+      </div>
+
+      <!-- S7b: Flexibilidad de zona -->
+      <div class="step auto-step" id="s7b">
+        <div class="section-pill">Zona</div>
+        <p class="q-text">¿Estarías abierto(a) a evaluar otras zonas?</p>
+        <p class="q-sub">A veces una zona cercana puede abrir mejores opciones de precio, espacio o disponibilidad.</p>
+        <div class="opts">
+          <button class="opt" onclick="selNext(this,'zona_flex','si',8)"><div class="opt-radio"></div><span class="opt-label">Sí, si el precio y las condiciones lo justifican</span></button>
+          <button class="opt" onclick="selNext(this,'zona_flex','no',8)"><div class="opt-radio"></div><span class="opt-label">No, esa zona es definitiva para mí</span></button>
         </div>
-        <button class="btn-primary" onclick="nextZona()">Continuar <span>→</span></button>
+        <button class="btn-primary" onclick="nextReq('7b',8,'zona_flex')">Continuar <span>→</span></button>
       </div>
 
       <!-- S8: Decisores -->
-      <div class="step" id="s8">
+      <div class="step auto-step" id="s8">
         <div class="section-pill">Decisión de compra</div>
         <p class="q-text">¿Quién más participa en la decisión de compra?</p>
         <p class="q-sub">Es importante que todos los decisores estén en la visita para poder avanzar rápido.</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'decisores','solo')"><div class="opt-radio"></div><span class="opt-label">Solo yo decido</span></button>
-          <button class="opt" onclick="sel(this,'decisores','pareja')"><div class="opt-radio"></div><span class="opt-label">Mi pareja o esposo(a)</span></button>
-          <button class="opt" onclick="sel(this,'decisores','familia')"><div class="opt-radio"></div><span class="opt-label">Mi familia (padres, hijos adultos)</span></button>
-          <button class="opt" onclick="sel(this,'decisores','varios')"><div class="opt-radio"></div><span class="opt-label">Somos varios — todos necesitamos estar presentes</span></button>
+          <button class="opt" onclick="selNext(this,'decisores','solo','8b')"><div class="opt-radio"></div><span class="opt-label">Solo yo decido</span></button>
+          <button class="opt" onclick="selNext(this,'decisores','pareja','8b')"><div class="opt-radio"></div><span class="opt-label">Mi pareja o esposo(a)</span></button>
+          <button class="opt" onclick="selNext(this,'decisores','familia','8b')"><div class="opt-radio"></div><span class="opt-label">Mi familia (padres, hijos adultos)</span></button>
+          <button class="opt" onclick="selNext(this,'decisores','varios','8b')"><div class="opt-radio"></div><span class="opt-label">Somos varios — todos necesitamos estar presentes</span></button>
         </div>
         <button class="btn-primary" onclick="nextReq(8,'8b','decisores')">Continuar <span>→</span></button>
       </div>
 
       <!-- S8b: Presupuesto -->
-      <div class="step" id="s8b">
+      <div class="step auto-step" id="s8b">
         <div class="section-pill">Presupuesto</div>
         <p class="q-text">¿En qué rango está el presupuesto que tienes en mente?</p>
         <p class="q-sub">No es un compromiso — nos ayuda a mostrarte opciones reales, no las que están fuera de tu alcance.</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'presupuesto','hasta_200')"><div class="opt-radio"></div><div><div class="opt-label">Hasta $200 millones</div><div class="opt-sublabel">VIS — bancos prestan hasta el 80%</div></div></button>
-          <button class="opt" onclick="sel(this,'presupuesto','200_300')"><div class="opt-radio"></div><div><div class="opt-label">$200M – $300 millones</div><div class="opt-sublabel">VIS / No VIS según el inmueble</div></div></button>
-          <button class="opt" onclick="sel(this,'presupuesto','300_500')"><div class="opt-radio"></div><div><div class="opt-label">$300M – $500 millones</div><div class="opt-sublabel">No VIS — bancos prestan hasta el 70%</div></div></button>
-          <button class="opt" onclick="sel(this,'presupuesto','500_800')"><div class="opt-radio"></div><div><div class="opt-label">$500M – $800 millones</div><div class="opt-sublabel">No VIS premium</div></div></button>
-          <button class="opt" onclick="sel(this,'presupuesto','mas_800')"><div class="opt-radio"></div><div><div class="opt-label">Más de $800 millones</div><div class="opt-sublabel">Segmento alto / lujo</div></div></button>
-          <button class="opt" onclick="sel(this,'presupuesto','no_definido')"><div class="opt-radio"></div><span class="opt-label">Aún no lo tengo definido</span></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','hasta_200',9)"><div class="opt-radio"></div><div><div class="opt-label">Hasta $200 millones</div><div class="opt-sublabel">VIS — bancos prestan hasta el 80%</div></div></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','200_300',9)"><div class="opt-radio"></div><div><div class="opt-label">$200M – $300 millones</div><div class="opt-sublabel">VIS / No VIS según el inmueble</div></div></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','300_500',9)"><div class="opt-radio"></div><div><div class="opt-label">$300M – $500 millones</div><div class="opt-sublabel">No VIS — bancos prestan hasta el 70%</div></div></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','500_800',9)"><div class="opt-radio"></div><div><div class="opt-label">$500M – $800 millones</div><div class="opt-sublabel">No VIS premium</div></div></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','mas_800',9)"><div class="opt-radio"></div><div><div class="opt-label">Más de $800 millones</div><div class="opt-sublabel">Segmento alto / lujo</div></div></button>
+          <button class="opt" onclick="selNext(this,'presupuesto','no_definido',9)"><div class="opt-radio"></div><span class="opt-label">Aún no lo tengo definido</span></button>
         </div>
         <button class="btn-primary" onclick="nextReq('8b',9,'presupuesto')">Continuar <span>→</span></button>
       </div>
@@ -371,7 +436,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
       <div class="step" id="s9">
         <div class="section-pill">Capacidad financiera</div>
         <p class="q-text">¿Cómo planeas financiar la compra?</p>
-        <p class="q-sub">Esto nos ayuda a entender qué opciones aplican para ti y cómo podemos acompañarte mejor.</p>
+        <p class="q-sub">Esto nos ayuda a filtrar opciones reales y entender si ya estás listo para avanzar.</p>
         <div class="opts">
           <button class="opt" onclick="sel(this,'credito','aprobado');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Con crédito hipotecario — ya está aprobado</div><div class="opt-sublabel">Tengo carta de aprobación de un banco</div></div></button>
           <button class="opt" onclick="sel(this,'credito','proceso');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Con crédito hipotecario — estoy en proceso</div><div class="opt-sublabel">Ya radicué o estoy en estudio de crédito</div></div></button>
@@ -379,11 +444,14 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
           <button class="opt" onclick="sel(this,'credito','mixto');showNotaCredito(true)"><div class="opt-radio"></div><div><div class="opt-label">Combinado — crédito + recursos propios</div><div class="opt-sublabel">Parte con banco, parte con mis ahorros</div></div></button>
           <button class="opt" onclick="sel(this,'credito','no');showNotaCredito(false)"><div class="opt-radio"></div><div><div class="opt-label">Aún no he iniciado el proceso</div><div class="opt-sublabel">No sé por dónde empezar</div></div></button>
         </div>
-        <div class="field-group" style="margin-top:14px" id="nota-credito-wrap">
-          <div class="field-label">¿Con qué banco y por qué monto?</div>
-          <input class="f-input" type="text" id="nota_credito" placeholder="Ej: Davivienda, aprobado por $280 millones..."/>
-        </div>
-        <button class="btn-primary" onclick="nextCredito()">Continuar <span>→</span></button>
+        <details class="optional-detail" id="nota-credito-wrap">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Con qué banco y por qué monto?</div>
+            <input class="f-input" type="text" id="nota_credito" placeholder="Ej: Davivienda, aprobado por $280 millones..."/>
+          </div>
+        </details>
+        <button class="btn-primary" onclick="nextCredito()">Revisar financiación <span>→</span></button>
       </div>
 
       <!-- S9b: Sin crédito -->
@@ -392,7 +460,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
           <div class="alert-icon">⚠️</div>
           <div>
             <div class="alert-title">Primero validemos tu capacidad financiera</div>
-            <div class="alert-body">Para no hacerte perder el tiempo viendo apartamentos que no puedas tomar hoy, necesitas un crédito aprobado o en proceso. Te conectamos con un analista de <strong>HabiCrédito</strong> — es gratis y te orienta en menos de 24 horas.</div>
+            <div class="alert-body">Para avanzar con opciones reales, necesitas un crédito aprobado o en proceso. Te conectamos con un analista de <strong>HabiCrédito</strong> — es gratis y te orienta en menos de 24 horas.</div>
           </div>
         </div>
         <p class="q-text" style="font-size:15px;margin-bottom:12px">¿Cuándo podemos llamarte?</p>
@@ -401,7 +469,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
           <button class="opt" onclick="sel(this,'horario','tarde')"><div class="opt-radio"></div><span class="opt-label">Tarde, 12pm – 6pm</span></button>
           <button class="opt" onclick="sel(this,'horario','cualquier')"><div class="opt-radio"></div><span class="opt-label">Cualquier momento</span></button>
         </div>
-        <button class="btn-primary" id="btn-submit-9b" onclick="submitLead('derivar','btn-submit-9b')">Confirmar y enviar mi información <span>→</span></button>
+        <button class="btn-primary" id="btn-submit-9b" onclick="submitLead('derivar','btn-submit-9b')">Confirmar horario <span>→</span></button>
         <div class="submit-error" id="err-9b">
           <div class="submit-error-title">No pudimos enviar tu información</div>
           <div class="submit-error-body">Hubo un problema técnico. Por favor intenta de nuevo o escríbenos directamente por WhatsApp y te atendemos de inmediato.</div>
@@ -444,7 +512,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
         <div class="alert-box warn">
           <div class="alert-icon">ℹ️</div>
           <div>
-            <div class="alert-title" style="color:var(--warn-text)">Aún no es el momento para visitas</div>
+            <div class="alert-title" style="color:var(--warn-text)">Primero preparemos tu compra</div>
             <div class="alert-body">Sin la cuota inicial disponible no podemos avanzar a visitas, pero podemos ayudarte a planificar. Un analista de HabiCrédito puede orientarte sobre cómo prepararte.</div>
           </div>
         </div>
@@ -454,7 +522,7 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
           <button class="opt" onclick="sel(this,'horario','tarde')"><div class="opt-radio"></div><span class="opt-label">Tarde, 12pm – 6pm</span></button>
           <button class="opt" onclick="sel(this,'horario','cualquier')"><div class="opt-radio"></div><span class="opt-label">Cualquier momento</span></button>
         </div>
-        <button class="btn-primary" id="btn-submit-10b" onclick="submitLead('derivar','btn-submit-10b')">Confirmar y enviar mi información <span>→</span></button>
+        <button class="btn-primary" id="btn-submit-10b" onclick="submitLead('derivar','btn-submit-10b')">Confirmar horario <span>→</span></button>
         <div class="submit-error" id="err-10b">
           <div class="submit-error-title">No pudimos enviar tu información</div>
           <div class="submit-error-body">Hubo un problema técnico. Por favor intenta de nuevo o escríbenos directamente por WhatsApp.</div>
@@ -464,26 +532,34 @@ textarea.f-input{resize:none;min-height:72px;line-height:1.55}
       </div>
 
       <!-- S11: Cierre -->
-      <div class="step" id="s11">
+      <div class="step auto-step" id="s11">
         <div class="section-pill">Última pregunta</div>
         <p class="q-text">Si encontramos el apartamento que cumple todo lo que buscas, ¿estás listo(a) para iniciar el proceso?</p>
         <div class="opts">
-          <button class="opt" onclick="sel(this,'listo','si')"><div class="opt-radio"></div><span class="opt-label">Sí — si cumple lo que busco, avanzo de inmediato</span></button>
-          <button class="opt" onclick="sel(this,'listo','quizas')"><div class="opt-radio"></div><span class="opt-label">Quizás — todavía estoy evaluando opciones</span></button>
-          <button class="opt" onclick="sel(this,'listo','no')"><div class="opt-radio"></div><span class="opt-label">No por ahora — solo estoy mirando</span></button>
+          <button class="opt" onclick="selNext(this,'listo','si','11b')"><div class="opt-radio"></div><span class="opt-label">Sí — si cumple lo que busco, avanzo de inmediato</span></button>
+          <button class="opt" onclick="selNext(this,'listo','quizas','11b')"><div class="opt-radio"></div><span class="opt-label">Quizás — todavía estoy evaluando opciones</span></button>
+          <button class="opt" onclick="selNext(this,'listo','no','11b')"><div class="opt-radio"></div><span class="opt-label">No por ahora — solo estoy mirando</span></button>
         </div>
-        <div class="field-group" style="margin-top:16px">
-          <div class="field-label">¿Cuántos apartamentos has visto hasta ahora?</div>
-          <div class="opts" style="margin-bottom:0">
-            <button class="opt" onclick="sel(this,'vistos','ninguno')"><div class="opt-radio"></div><span class="opt-label">Ninguno, soy nuevo(a) buscando</span></button>
-            <button class="opt" onclick="sel(this,'vistos','pocos')"><div class="opt-radio"></div><span class="opt-label">Entre 1 y 5 apartamentos</span></button>
-            <button class="opt" onclick="sel(this,'vistos','muchos')"><div class="opt-radio"></div><span class="opt-label">Más de 5</span></button>
+        <button class="btn-primary" onclick="nextReq(11,'11b','listo')">Continuar <span>→</span></button>
+      </div>
+
+      <!-- S11b: Experiencia previa -->
+      <div class="step" id="s11b">
+        <div class="section-pill">Última pregunta</div>
+        <p class="q-text">¿Cuántos apartamentos has visto hasta ahora?</p>
+        <p class="q-sub">Esto le ayuda a tu asesor a entender qué tanto has comparado y qué evitar repetir.</p>
+        <div class="opts">
+          <button class="opt" onclick="sel(this,'vistos','ninguno')"><div class="opt-radio"></div><span class="opt-label">Ninguno, soy nuevo(a) buscando</span></button>
+          <button class="opt" onclick="sel(this,'vistos','pocos')"><div class="opt-radio"></div><span class="opt-label">Entre 1 y 5 apartamentos</span></button>
+          <button class="opt" onclick="sel(this,'vistos','muchos')"><div class="opt-radio"></div><span class="opt-label">Más de 5</span></button>
+        </div>
+        <details class="optional-detail">
+          <summary>Agregar detalle opcional</summary>
+          <div class="field-group">
+            <div class="field-label">¿Qué no te gustó de los que ya viste? (si aplica)</div>
+            <textarea class="f-input" id="nota_anteriores" placeholder="Ej: muy pequeños, sin parqueadero, sector peligroso, precio muy alto..."></textarea>
           </div>
-        </div>
-        <div class="field-group" style="margin-top:14px">
-          <div class="field-label">¿Qué no te gustó de los que ya viste? (si aplica)</div>
-          <textarea class="f-input" id="nota_anteriores" placeholder="Ej: muy pequeños, sin parqueadero, sector peligroso, precio muy alto..."></textarea>
-        </div>
+        </details>
         <button class="btn-primary" id="btn-submit-11" onclick="submitLead('completo','btn-submit-11')">Enviar mi perfil <span>→</span></button>
         <div class="submit-error" id="err-11">
           <div class="submit-error-title">No pudimos enviar tu información</div>
@@ -553,6 +629,7 @@ const N8N_POST_LEAD  = 'https://n8n.noema.lat/webhook/process-lead';
 const D = {};
 const TOTAL = 13;
 let brokerConfig = {};
+const answerSummary = [];
 
 // ── INIT ──
 async function init() {
@@ -600,11 +677,11 @@ function applyConfig(c) {
   const initials = nombre.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
   document.getElementById('av').textContent = initials;
   document.getElementById('bk-name').textContent = nombre;
-  document.getElementById('bk-sub').textContent = c.inmobiliaria || '';
+  document.getElementById('bk-sub').textContent = `Asesor inmobiliario${c.inmobiliaria ? ' · ' + c.inmobiliaria : ''}`;
   document.getElementById('bk-logo').textContent = c.logo || 'HABI';
   document.getElementById('intro-text').innerHTML = `Soy <strong>${nombre}</strong>, de ${c.inmobiliaria || ''}. ${c.mensaje_intro || ''}`;
   document.getElementById('asesor-texto').textContent = `${asesor} te contactará con opciones a tu medida`;
-  document.getElementById('asesor-sub').textContent = `${asesor.charAt(0).toUpperCase()+asesor.slice(1)} te contactará directamente con las mejores opciones. Tu información nunca se comparte con otras personas ni empresas.`;
+  document.getElementById('asesor-sub').textContent = `${asesor.charAt(0).toUpperCase()+asesor.slice(1)} usará estos datos solo para contactarte sobre tu búsqueda. Tu información nunca se comparte con otras personas ni empresas.`;
   // Zona: ciudad dinámica
   const ciudad = c.ciudad || 'la ciudad';
   const zonaSub = document.getElementById('zona-sub');
@@ -629,14 +706,95 @@ function goTo(n) {
   const pct = Math.min(Math.round((num/TOTAL)*100),100);
   document.getElementById('prog').style.width = pct+'%';
   document.getElementById('pct-lbl').textContent = pct+'%';
-  document.getElementById('step-lbl').textContent = 'Paso '+(num||'-')+' de '+TOTAL;
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('step-lbl').textContent = 'Tu avance';
+  scrollToShell();
+}
+
+function scrollToShell() {
+  const shell = document.querySelector('.card');
+  if (!shell) {
+    window.scrollTo({top:0,behavior:'smooth'});
+    return;
+  }
+  shell.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function sel(btn,key,val) {
   btn.closest('.opts').querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
   D[key]=val;
+}
+
+function escText(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[ch]));
+}
+
+function optionLabel(btn) {
+  const label = btn.querySelector('.opt-label');
+  return (label ? label.textContent : btn.textContent).replace(/\s+/g,' ').trim();
+}
+
+function truncateLabel(text, max = 28) {
+  const clean = String(text || '').replace(/\s+/g,' ').trim();
+  return clean.length > max ? clean.slice(0, max - 1).trim() + '…' : clean;
+}
+
+function renderAnswerSummary() {
+  const box = document.getElementById('answer-summary');
+  const nudge = document.getElementById('progress-nudge');
+  if (!box) return;
+
+  if (!answerSummary.length) {
+    box.classList.remove('has-items');
+    box.innerHTML = '';
+    if (nudge) nudge.classList.remove('show');
+    return;
+  }
+
+  const visible = answerSummary.slice(-3);
+  const hiddenCount = Math.max(answerSummary.length - visible.length, 0);
+
+  box.classList.add('has-items');
+  box.innerHTML = `
+    <div class="summary-title">Tus respuestas</div>
+    <div class="summary-list">
+      ${visible.map(item => `<span class="summary-chip">${escText(truncateLabel(item.text))}</span>`).join('')}
+      ${hiddenCount ? `<span class="summary-more">+ ${hiddenCount} anteriores</span>` : ''}
+    </div>
+  `;
+
+  if (nudge) nudge.classList.toggle('show', answerSummary.length >= 4);
+}
+
+function updateAnswerSummary(key, userText) {
+  const existingIndex = answerSummary.findIndex(item => item.key === key);
+  if (existingIndex >= 0) {
+    answerSummary.splice(existingIndex, 1);
+  }
+  answerSummary.push({ key, text:userText });
+  renderAnswerSummary();
+}
+
+let autoAdvanceTimer = null;
+function selNext(btn,key,val,nextStep) {
+  sel(btn,key,val);
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+
+  const active = btn.closest('.step');
+  const optionalOpen = active && active.querySelector('.optional-detail[open]');
+  if (optionalOpen) return;
+
+  updateAnswerSummary(key, optionLabel(btn));
+
+  autoAdvanceTimer = setTimeout(() => {
+    goTo(nextStep);
+  }, 700);
 }
 
 function showErr(msg) {
@@ -652,6 +810,11 @@ function showErr(msg) {
 
 function nextReq(from,to,key){
   if(!D[key]){showErr();return;}
+  const active = document.querySelector('.step.active');
+  if (active && active.classList.contains('auto-step')) {
+    const selected = active.querySelector('.opt.sel');
+    if (selected) updateAnswerSummary(key, optionLabel(selected));
+  }
   goTo(to);
 }
 
@@ -666,8 +829,8 @@ function next2(){
 function nextZona(){
   D.zona=document.getElementById('zona').value.trim()||'No especificada';
   D.zona_razon=document.getElementById('zona_razon').value.trim()||'';
-  if(!D.zona_flex){showErr('Por favor indica si estás abierto a otras zonas.');return;}
-  goTo(8);
+  updateAnswerSummary('zona', D.zona);
+  goTo('7b');
 }
 
 function showNotaCredito(visible) {
